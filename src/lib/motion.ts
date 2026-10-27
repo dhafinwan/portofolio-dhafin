@@ -1,26 +1,29 @@
 import { useReducedMotion, type Variants, type Transition } from "motion/react";
 
-/**
- * Standard transition for subtle entrance animations
- */
+// ─── Transitions ─────────────────────────────────────────────────────────────
+
+/** Standard entrance: 0.45s, cubic ease */
 const standardTransition: Transition = {
   duration: 0.45,
   ease: [0.25, 0.1, 0.25, 1],
 };
 
+/** Fast: 0.22s — used for hover / micro-interactions */
 const fastTransition: Transition = {
-  duration: 0.25,
+  duration: 0.22,
   ease: [0.25, 0.1, 0.25, 1],
 };
 
+// ─── Entrance Variants ───────────────────────────────────────────────────────
+
 /**
- * (1) Standard entrance variants: subtle fade + small translateY (max 16px, duration 0.4-0.5s)
+ * Standard entrance: fade + 14px translateY.
+ * Use as child variant inside a stagger container, OR with
+ * `whileInView="visible"` + `viewport={{ once: true, amount: 0.2 }}`.
+ * Only animates `opacity` and `transform` — no layout shift.
  */
 export const fadeInUpVariants: Variants = {
-  hidden: {
-    opacity: 0,
-    y: 16,
-  },
+  hidden: { opacity: 0, y: 14, filter: "none" },
   visible: {
     opacity: 1,
     y: 0,
@@ -29,23 +32,22 @@ export const fadeInUpVariants: Variants = {
 };
 
 /**
- * Fade-only variant for elements where vertical shift would cause layout issues
+ * Fade-only variant — for elements where vertical shift causes layout issues
+ * (e.g. text inside a flex container with fixed height).
  */
 export const fadeInVariants: Variants = {
   hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: standardTransition,
-  },
+  visible: { opacity: 1, transition: standardTransition },
 };
 
+// ─── Stagger Container Variants ──────────────────────────────────────────────
+
 /**
- * (2) Container variant with short stagger (max 0.08s per child)
+ * Hero-level stagger container (immediate entry, 0.06s between children).
+ * Use `initial="hidden" animate="visible"` on the container.
  */
 export const containerStaggerVariants: Variants = {
-  hidden: {
-    opacity: 0,
-  },
+  hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
@@ -56,8 +58,10 @@ export const containerStaggerVariants: Variants = {
 };
 
 /**
- * Viewport-aware container (for scroll reveals) — no opacity on container itself
- * so children can independently fade in.
+ * Viewport-aware stagger container — used with `whileInView`.
+ * Container itself has no opacity animation (children handle it),
+ * preventing double-fade when the container enters.
+ * staggerChildren: 0.07s — max per spec.
  */
 export const viewportContainerVariants: Variants = {
   hidden: {},
@@ -70,30 +74,87 @@ export const viewportContainerVariants: Variants = {
 };
 
 /**
- * Hover feedback variant for cards (subtle lift, transform only)
+ * Dense stagger — for grids with many small cards (credentials, etc.).
+ * Shorter delay prevents the last card feeling too slow.
  */
-export const cardHoverVariants = {
-  rest: { y: 0, scale: 1 },
-  hover: {
-    y: -3,
-    transition: fastTransition,
+export const denseStaggerVariants: Variants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.05,
+      delayChildren: 0.04,
+    },
   },
 };
 
+// ─── Hover / Interaction Variants ────────────────────────────────────────────
+
 /**
- * Hover feedback for buttons (subtle lift only)
+ * Card hover: subtle lift (-4px Y) + faint scale.
+ * Pair with `initial="rest" whileHover="hover" whileTap="tap"`.
+ * Only animates `transform` — no reflow.
  */
-export const buttonHoverVariants = {
-  rest: { y: 0 },
-  hover: { y: -1, transition: fastTransition },
-  tap: { y: 0, scale: 0.98, transition: { duration: 0.1 } },
+export const cardHoverVariants: Variants = {
+  rest:  { y: 0,  scale: 1,    transition: fastTransition },
+  hover: { y: -4, scale: 1.005, transition: fastTransition },
+  tap:   { y: 0,  scale: 0.99, transition: { duration: 0.1 } },
 };
 
 /**
- * (3) Custom hook to detect if user prefers reduced motion
- * Wraps useReducedMotion from "motion/react"
+ * Button hover: very subtle lift (-1px) + tap squish.
+ */
+export const buttonHoverVariants: Variants = {
+  rest:  { y: 0, scale: 1,    transition: fastTransition },
+  hover: { y: -1, scale: 1,   transition: fastTransition },
+  tap:   { y: 0,  scale: 0.97, transition: { duration: 0.1 } },
+};
+
+/**
+ * Icon/small-element hover: scale pulse.
+ */
+export const iconHoverVariants: Variants = {
+  rest:  { scale: 1,    transition: fastTransition },
+  hover: { scale: 1.15, transition: fastTransition },
+  tap:   { scale: 0.9,  transition: { duration: 0.1 } },
+};
+
+// ─── Tab / Filter Animation ──────────────────────────────────────────────────
+
+/**
+ * Grid container for AnimatePresence + layout tab switching.
+ * Combines fade exit with child stagger on enter.
+ */
+export const tabGridVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+      delayChildren: 0.02,
+    },
+  },
+  exit: {
+    opacity: 0,
+    transition: { duration: 0.15, ease: "easeIn" },
+  },
+};
+
+// ─── Hook ────────────────────────────────────────────────────────────────────
+
+/**
+ * Returns `true` when `prefers-reduced-motion: reduce` is active.
+ * Use to conditionally disable all motion variants.
  */
 export const usePrefersReducedMotion = (): boolean => {
   const shouldReduceMotion = useReducedMotion();
   return Boolean(shouldReduceMotion);
 };
+
+// ─── Shared Viewport Config ──────────────────────────────────────────────────
+
+/**
+ * Standard viewport config for all `whileInView` animations.
+ * `once: true`  — fires only the first time the element enters.
+ * `amount: 0.2` — triggers when 20% of element is visible.
+ */
+export const VIEWPORT = { once: true, amount: 0.2 } as const;

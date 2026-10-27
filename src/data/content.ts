@@ -61,16 +61,39 @@ export interface SkillCategory {
   skills: string[];
 }
 
+export type CredentialCategory =
+  | "Data & AI"
+  | "Programming & DB"
+  | "Network & IT"
+  | "General & Office";
+
 export interface Certification {
   name: string;
   issuer: string;
   periodOrYear: string;
+  category: CredentialCategory;
+  fileUrl: string; // Path ke file di /certificates/
+  previewType: "pdf" | "image"; // Untuk menentukan cara preview di modal
 }
 
 export interface Training {
   name: string;
   issuer: string;
   periodOrYear: string;
+  category: CredentialCategory;
+  fileUrl: string;
+  previewType: "pdf" | "image";
+}
+
+export interface CertificateEvidence {
+  id: string;
+  name: string;
+  issuer: string;
+  periodOrYear: string;
+  category: CredentialCategory | "Bundel PDF";
+  fileUrl: string;
+  previewType: "pdf" | "image";
+  isBundle?: boolean;
 }
 
 export interface PortfolioData {
@@ -83,7 +106,140 @@ export interface PortfolioData {
   skills: SkillCategory[];
   certifications: Certification[];
   trainings: Training[];
+  allCertificatesBundleUrl: string;
+  allCertificates: CertificateEvidence[];
 }
+
+// ─── 14 BUKTI SERTIFIKAT LENGKAP ───────────────────────────────────────────────
+export const allCertificates: CertificateEvidence[] = [
+  {
+    id: "sementara-lsp-data-science",
+    name: "Sementara LSP Data Science",
+    issuer: "BNSP (LSP Informatika)",
+    periodOrYear: "2026",
+    category: "Data & AI",
+    fileUrl: encodeURI("/certificates/Sementara LSP Data Science.pdf"),
+    previewType: "pdf",
+  },
+  {
+    id: "data-science-course-1",
+    name: "Data Science Course (First Case)",
+    issuer: "Universitas Gunadarma",
+    periodOrYear: "Mei 2026",
+    category: "Data & AI",
+    fileUrl: encodeURI("/certificates/Data Science Course (First Case).pdf"),
+    previewType: "pdf",
+  },
+  {
+    id: "data-science-course-2",
+    name: "Data Science Course (Second Case)",
+    issuer: "Universitas Gunadarma",
+    periodOrYear: "Mei 2026",
+    category: "Data & AI",
+    fileUrl: encodeURI("/certificates/Data Science Course (Second Case).pdf"),
+    previewType: "pdf",
+  },
+  {
+    id: "junior-network-administrator",
+    name: "Junior Network Administrator",
+    issuer: "BNSP",
+    periodOrYear: "Apr 2022 – Apr 2025",
+    category: "Network & IT",
+    fileUrl: encodeURI("/certificates/Junior Network Administrator.jpg"),
+    previewType: "image",
+  },
+  {
+    id: "intro-wireless-lan",
+    name: "Introduction to wireless LAN installation",
+    issuer: "Cisco Networking Academy",
+    periodOrYear: "Okt 2024",
+    category: "Network & IT",
+    fileUrl: encodeURI("/certificates/Introduction to wireless LAN installation.pdf"),
+    previewType: "pdf",
+  },
+  {
+    id: "golang-beginner",
+    name: "GO-LANG FOR BEGINNER",
+    issuer: "Universitas Gunadarma",
+    periodOrYear: "Feb 2024",
+    category: "Programming & DB",
+    fileUrl: encodeURI("/certificates/GO-LANG FOR BEGINNER.pdf"),
+    previewType: "pdf",
+  },
+  {
+    id: "golang-intermediate",
+    name: "GO-LANG FOR INTERMEDIATE",
+    issuer: "Universitas Gunadarma",
+    periodOrYear: "Feb 2025",
+    category: "Programming & DB",
+    fileUrl: encodeURI("/certificates/GO-LANG FOR INTERMEDIATE.pdf"),
+    previewType: "pdf",
+  },
+  {
+    id: "oracle-beginner",
+    name: "ORACLE FOR BEGINNER",
+    issuer: "Universitas Gunadarma / Oracle",
+    periodOrYear: "Agu 2023",
+    category: "Programming & DB",
+    fileUrl: encodeURI("/certificates/ORACLE FOR BEGINNER.pdf"),
+    previewType: "pdf",
+  },
+  {
+    id: "oracle-intermediate",
+    name: "ORACLE FOR INTERMEDIATE",
+    issuer: "Universitas Gunadarma / Oracle",
+    periodOrYear: "Agu 2025",
+    category: "Programming & DB",
+    fileUrl: encodeURI("/certificates/ORACLE FOR INTERMEDIATE.pdf"),
+    previewType: "pdf",
+  },
+  {
+    id: "fundamental-dbms",
+    name: "FUNDAMENTAL DBMS",
+    issuer: "Universitas Gunadarma",
+    periodOrYear: "Agu 2023",
+    category: "Programming & DB",
+    fileUrl: encodeURI("/certificates/FUNDAMENTAL DBMS.pdf"),
+    previewType: "pdf",
+  },
+  {
+    id: "fundamental-web-programming",
+    name: "FUNDAMENTAL WEB PROGRAMMING",
+    issuer: "Universitas Gunadarma",
+    periodOrYear: "Feb 2023",
+    category: "Programming & DB",
+    fileUrl: encodeURI("/certificates/FUNDAMENTAL WEB PROGRAMMING.pdf"),
+    previewType: "pdf",
+  },
+  {
+    id: "mos-2016",
+    name: "MOS 2016",
+    issuer: "Microsoft",
+    periodOrYear: "2022",
+    category: "General & Office",
+    fileUrl: encodeURI("/certificates/MOS 2016.pdf"),
+    previewType: "pdf",
+  },
+  {
+    id: "aptitude-test",
+    name: "Aptitude Test",
+    issuer: "Universitas Gunadarma",
+    periodOrYear: "2023",
+    category: "General & Office",
+    fileUrl: encodeURI("/certificates/Aptitude Test.pdf"),
+    previewType: "pdf",
+  },
+  {
+    id: "gabungan-seluruh-sertifikat",
+    name: "Gabungan seluruh sertifikat",
+    issuer: "BNSP / Gunadarma / Cisco / Microsoft",
+    periodOrYear: "2022 – 2026",
+    category: "Bundel PDF",
+    fileUrl: encodeURI("/certificates/Gabungan seluruh sertifikat.pdf"),
+    previewType: "pdf",
+    isBundle: true,
+  },
+];
 
 export const portfolioData: PortfolioData = {
   profile: {
@@ -101,7 +257,7 @@ export const portfolioData: PortfolioData = {
       huggingface: "https://huggingface.co/Dhafinwan",
       // phone sengaja tidak diisi (opsional, dilarang dirender di UI)
     },
-    cvFilePath: "/cv/CV_DHAFIN KURNIAWAN_ENGLISH.pdf",
+    cvFilePath: encodeURI("/cv/CV_DHAFIN KURNIAWAN_ENGLISH.pdf"),
   },
 
   highlights: [
@@ -183,7 +339,7 @@ export const portfolioData: PortfolioData = {
       tech: ["Python", "Naive Bayes", "SMOTE", "YouTube API", "Sastrawi"],
       points: [
         "Mengekstraksi 1.787 komentar opini publik via YouTube API.",
-        "Pemrosesan teks: normalisasi bahasa gaul, stopword removal, tokenisasi, stemming dengan Sastrawi.",
+        "Pemrosesan teks: normalisasi bahasa gaul, stopword removal, tokenisasi, input stemming dengan Sastrawi.",
         "Model Multinomial Naive Bayes dengan SMOTE, akurasi 78,28%.",
         "Insight menggabungkan analisis teks dengan data survei kuantitatif (Skala Likert).",
       ],
@@ -324,52 +480,114 @@ export const portfolioData: PortfolioData = {
 
   certifications: [
     {
-      name: "Associate Data Scientist (Ilmuwan Data Madya)",
-      issuer: "BNSP",
+      name: "Sementara LSP Data Science (Associate Data Scientist)",
+      issuer: "BNSP (LSP Informatika)",
       periodOrYear: "2026",
+      category: "Data & AI",
+      fileUrl: encodeURI("/certificates/Sementara LSP Data Science.pdf"),
+      previewType: "pdf",
     },
     {
       name: "Junior Network Administrator",
       issuer: "BNSP",
       periodOrYear: "Apr 2022 – Apr 2025",
+      category: "Network & IT",
+      fileUrl: encodeURI("/certificates/Junior Network Administrator.jpg"),
+      previewType: "image",
     },
     {
-      name: "Microsoft Office Specialist (MOS): Word 2016",
+      name: "MOS 2016 (Microsoft Office Specialist)",
       issuer: "Microsoft",
       periodOrYear: "2022",
+      category: "General & Office",
+      fileUrl: encodeURI("/certificates/MOS 2016.pdf"),
+      previewType: "pdf",
     },
   ],
 
   trainings: [
     {
-      name: "Data Science Course: First & Second Case",
+      name: "Data Science Course (First Case)",
       issuer: "Universitas Gunadarma",
       periodOrYear: "Mei 2026",
+      category: "Data & AI",
+      fileUrl: encodeURI("/certificates/Data Science Course (First Case).pdf"),
+      previewType: "pdf",
     },
     {
-      name: "Oracle for Beginner & Intermediate",
-      issuer: "Universitas Gunadarma / Oracle",
-      periodOrYear: "Agu 2023 – Agu 2025",
-    },
-    {
-      name: "Go-Lang for Beginner & Intermediate",
+      name: "Data Science Course (Second Case)",
       issuer: "Universitas Gunadarma",
-      periodOrYear: "Feb 2024 – Feb 2025",
+      periodOrYear: "Mei 2026",
+      category: "Data & AI",
+      fileUrl: encodeURI("/certificates/Data Science Course (Second Case).pdf"),
+      previewType: "pdf",
     },
     {
-      name: "Introduction to Wireless LAN Installation",
+      name: "ORACLE FOR BEGINNER",
+      issuer: "Universitas Gunadarma / Oracle",
+      periodOrYear: "Agu 2023",
+      category: "Programming & DB",
+      fileUrl: encodeURI("/certificates/ORACLE FOR BEGINNER.pdf"),
+      previewType: "pdf",
+    },
+    {
+      name: "ORACLE FOR INTERMEDIATE",
+      issuer: "Universitas Gunadarma / Oracle",
+      periodOrYear: "Agu 2025",
+      category: "Programming & DB",
+      fileUrl: encodeURI("/certificates/ORACLE FOR INTERMEDIATE.pdf"),
+      previewType: "pdf",
+    },
+    {
+      name: "GO-LANG FOR BEGINNER",
+      issuer: "Universitas Gunadarma",
+      periodOrYear: "Feb 2024",
+      category: "Programming & DB",
+      fileUrl: encodeURI("/certificates/GO-LANG FOR BEGINNER.pdf"),
+      previewType: "pdf",
+    },
+    {
+      name: "GO-LANG FOR INTERMEDIATE",
+      issuer: "Universitas Gunadarma",
+      periodOrYear: "Feb 2025",
+      category: "Programming & DB",
+      fileUrl: encodeURI("/certificates/GO-LANG FOR INTERMEDIATE.pdf"),
+      previewType: "pdf",
+    },
+    {
+      name: "Introduction to wireless LAN installation",
       issuer: "Cisco Networking Academy",
       periodOrYear: "Okt 2024",
+      category: "Network & IT",
+      fileUrl: encodeURI("/certificates/Introduction to wireless LAN installation.pdf"),
+      previewType: "pdf",
     },
     {
-      name: "Fundamental DBMS",
+      name: "FUNDAMENTAL DBMS",
       issuer: "Universitas Gunadarma",
       periodOrYear: "Agu 2023",
+      category: "Programming & DB",
+      fileUrl: encodeURI("/certificates/FUNDAMENTAL DBMS.pdf"),
+      previewType: "pdf",
     },
     {
-      name: "Fundamental Web Programming",
+      name: "FUNDAMENTAL WEB PROGRAMMING",
       issuer: "Universitas Gunadarma",
       periodOrYear: "Feb 2023",
+      category: "Programming & DB",
+      fileUrl: encodeURI("/certificates/FUNDAMENTAL WEB PROGRAMMING.pdf"),
+      previewType: "pdf",
+    },
+    {
+      name: "Aptitude Test",
+      issuer: "Universitas Gunadarma",
+      periodOrYear: "2023",
+      category: "General & Office",
+      fileUrl: encodeURI("/certificates/Aptitude Test.pdf"),
+      previewType: "pdf",
     },
   ],
+
+  allCertificatesBundleUrl: encodeURI("/certificates/Gabungan seluruh sertifikat.pdf"),
+  allCertificates,
 };
