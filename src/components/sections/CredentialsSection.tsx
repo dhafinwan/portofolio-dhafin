@@ -1,6 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { portfolioData, allCertificates, CertificateEvidence, CredentialCategory } from "@/data/content";
+import {
+  usePortfolioContent,
+  allCertificates,
+  CertificateEvidence,
+  CredentialCategory,
+} from "@/data/content";
 import {
   Certificate,
   BookOpen,
@@ -17,54 +22,23 @@ import {
   usePrefersReducedMotion,
   fadeInUpVariants,
   tabGridVariants,
-  buttonHoverVariants,
   VIEWPORT,
 } from "@/lib/motion";
 
-// ─── Category Definitions ────────────────────────────────────────────────────
 type TabFilter = "Semua" | CredentialCategory;
 
-interface CategoryDef {
-  id: TabFilter;
-  label: string;
-  color: { bg: string; fg: string; border: string };
-}
-
-const CATEGORIES: CategoryDef[] = [
-  {
-    id: "Semua",
-    label: "Semua",
-    color: { bg: "rgba(113,113,122,0.12)", fg: "#A1A1AA", border: "rgba(113,113,122,0.25)" },
-  },
-  {
-    id: "Data & AI",
-    label: "Data & AI",
-    color: { bg: "rgba(37,99,235,0.14)", fg: "#60A5FA", border: "rgba(37,99,235,0.35)" },
-  },
-  {
-    id: "Programming & DB",
-    label: "Programming & DB",
-    color: { bg: "rgba(139,92,246,0.14)", fg: "#C4B5FD", border: "rgba(139,92,246,0.35)" },
-  },
-  {
-    id: "Network & IT",
-    label: "Network & IT",
-    color: { bg: "rgba(34,197,94,0.14)", fg: "#86EFAC", border: "rgba(34,197,94,0.35)" },
-  },
-  {
-    id: "General & Office",
-    label: "General & Office",
-    color: { bg: "rgba(251,191,36,0.12)", fg: "#FCD34D", border: "rgba(251,191,36,0.3)" },
-  },
+const CATEGORY_KEYS: CredentialCategory[] = [
+  "Data & AI",
+  "Programming & DB",
+  "Network & IT",
+  "General & Office",
 ];
 
-// Helper to determine if an item is a certification vs training
 function isCertification(name: string): boolean {
   const n = name.toLowerCase();
   return n.includes("lsp") || n.includes("administrator") || n.includes("mos");
 }
 
-// ─── Spotlight hook ───────────────────────────────────────────────────────────
 function useSpotlight(prefersReducedMotion: boolean) {
   const ref = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState(false);
@@ -79,7 +53,6 @@ function useSpotlight(prefersReducedMotion: boolean) {
   return { ref, hovered, setHovered, handleMouseMove };
 }
 
-// ─── Certificate Modal Preview Component ──────────────────────────────────────
 interface PreviewModalState {
   isOpen: boolean;
   name: string;
@@ -92,9 +65,11 @@ interface PreviewModalState {
 function CertificateModal({
   modalState,
   onClose,
+  closeLabel,
 }: {
   modalState: PreviewModalState;
   onClose: () => void;
+  closeLabel: string;
 }) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -141,66 +116,37 @@ function CertificateModal({
           }}
           className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5"
           style={{
-            backgroundColor: "rgba(9, 9, 11, 0.88)",
+            backgroundColor: "rgba(10, 10, 10, 0.85)",
             backdropFilter: "blur(12px)",
             WebkitBackdropFilter: "blur(12px)",
           }}
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 14 }}
+            initial={{ opacity: 0, scale: 0.96, y: 12 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 14 }}
-            transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
-            className="relative flex flex-col w-full max-w-4xl max-h-[92vh] rounded-2xl overflow-hidden"
+            exit={{ opacity: 0, scale: 0.96, y: 12 }}
+            transition={{ duration: 0.22, ease: [0.25, 0.1, 0.25, 1] }}
+            className="relative flex flex-col w-full max-w-4xl max-h-[92vh] rounded-2xl overflow-hidden bg-surface border border-border"
             style={{
-              backgroundColor: "var(--color-surface)",
-              border: "1px solid var(--color-border)",
-              boxShadow: "0 25px 60px -15px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(37, 99, 235, 0.15)",
+              boxShadow: "0 25px 60px -15px rgba(0, 0, 0, 0.75)",
             }}
           >
-            {/* Top Accent Bar */}
-            <div
-              className="h-1 w-full"
-              style={{
-                background: "linear-gradient(90deg, #2563EB 0%, #7C3AED 50%, #10B981 100%)",
-              }}
-            />
-
             {/* Modal Header */}
-            <div
-              className="flex items-center justify-between gap-3 px-5 py-3.5 border-b"
-              style={{
-                borderColor: "var(--color-border)",
-                backgroundColor: "var(--color-surface)",
-              }}
-            >
+            <div className="flex items-center justify-between gap-3 px-5 py-4 border-b border-border bg-surface">
               <div className="min-w-0 pr-2">
                 <div className="flex items-center gap-2 mb-1">
-                  <span
-                    className="text-[10px] font-semibold uppercase tracking-wider"
-                    style={{ color: "var(--color-accent-text)" }}
-                  >
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-text-muted">
                     {modalState.issuer}
                   </span>
                   {modalState.category && (
-                    <span
-                      className="text-[10px] px-1.5 py-0.2 rounded font-mono"
-                      style={{
-                        backgroundColor: "rgba(37,99,235,0.1)",
-                        color: "var(--color-text-secondary)",
-                      }}
-                    >
+                    <span className="text-[10px] px-2 py-0.5 rounded-full font-mono bg-surface-2 border border-border text-text-secondary">
                       {modalState.category}
                     </span>
                   )}
                 </div>
                 <h3
                   id="cert-modal-title"
-                  className="text-base font-bold truncate"
-                  style={{
-                    color: "var(--color-text-primary)",
-                    fontFamily: "var(--font-heading)",
-                  }}
+                  className="text-base font-medium truncate text-text-primary"
                   title={modalState.name}
                 >
                   {modalState.name}
@@ -213,49 +159,28 @@ function CertificateModal({
                   href={modalState.fileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                  style={{
-                    backgroundColor: "var(--color-surface-2)",
-                    border: "1px solid var(--color-border)",
-                    color: "var(--color-text-primary)",
-                    textDecoration: "none",
-                    transition: "all 0.15s ease",
-                  }}
-                  title="Buka di Tab Baru"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-surface-2 border border-border text-text-primary hover:bg-surface transition-colors"
+                  title="Open in New Tab"
                 >
                   <ArrowSquareOut size={14} aria-hidden="true" />
-                  <span className="hidden sm:inline">Buka di Tab Baru</span>
+                  <span className="hidden sm:inline">Open</span>
                 </a>
 
                 <a
                   href={modalState.fileUrl}
                   download
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                  style={{
-                    backgroundColor: "rgba(34,197,94,0.12)",
-                    border: "1px solid rgba(34,197,94,0.3)",
-                    color: "#86EFAC",
-                    textDecoration: "none",
-                    transition: "all 0.15s ease",
-                  }}
-                  title="Unduh File Sertifikat"
+                  className="btn-pill-primary inline-flex items-center gap-1.5 text-xs font-medium"
+                  title="Download Certificate"
                 >
                   <DownloadSimple size={14} aria-hidden="true" />
-                  <span className="hidden sm:inline">Unduh</span>
+                  <span className="hidden sm:inline">Download</span>
                 </a>
 
                 <button
                   ref={closeButtonRef}
                   onClick={onClose}
-                  aria-label="Tutup preview sertifikat"
-                  className="inline-flex items-center justify-center w-8 h-8 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                  style={{
-                    backgroundColor: "var(--color-surface-2)",
-                    border: "1px solid var(--color-border)",
-                    color: "var(--color-text-secondary)",
-                    cursor: "pointer",
-                    transition: "all 0.15s ease",
-                  }}
+                  aria-label={closeLabel}
+                  className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-surface-2 border border-border text-text-secondary hover:text-text-primary transition-colors cursor-pointer"
                 >
                   <X size={16} aria-hidden="true" />
                 </button>
@@ -264,45 +189,31 @@ function CertificateModal({
 
             {/* Modal Body / Viewer Area */}
             <div
-              className="flex-1 overflow-auto flex items-center justify-center p-3 sm:p-5"
+              className="flex-1 overflow-auto flex items-center justify-center p-4 sm:p-6 bg-bg"
               style={{
-                backgroundColor: "var(--color-bg)",
                 minHeight: "450px",
-                maxHeight: "78vh",
+                maxHeight: "76vh",
               }}
             >
               {modalState.previewType === "image" ? (
                 <img
                   src={modalState.fileUrl}
                   alt={modalState.name}
-                  className="max-w-full max-h-[70vh] object-contain rounded-lg shadow-2xl"
-                  style={{
-                    border: "1px solid var(--color-border)",
-                  }}
+                  className="max-w-full max-h-[70vh] object-contain rounded-lg border border-border shadow-2xl"
                 />
               ) : (
                 <iframe
                   src={`${modalState.fileUrl}#view=FitH`}
                   title={`Preview: ${modalState.name}`}
-                  className="w-full h-[68vh] min-h-[420px] rounded-lg border-0 shadow-inner"
-                  style={{
-                    backgroundColor: "#1e1e24",
-                  }}
+                  className="w-full h-[68vh] min-h-[420px] rounded-lg border-0 shadow-inner bg-[#1e1e24]"
                 />
               )}
             </div>
 
             {/* Modal Footer Info */}
-            <div
-              className="px-5 py-2.5 flex items-center justify-between text-xs border-t"
-              style={{
-                borderColor: "var(--color-border)",
-                backgroundColor: "var(--color-surface)",
-                color: "var(--color-text-muted)",
-              }}
-            >
-              <span>Tekan <kbd className="px-1.5 py-0.5 rounded bg-surface-2 border border-border font-mono text-[10px]">ESC</kbd> atau klik di luar untuk menutup</span>
-              <span className="font-mono text-[11px]">{modalState.previewType.toUpperCase()} File</span>
+            <div className="px-5 py-2.5 flex items-center justify-between text-xs border-t border-border bg-surface text-text-muted">
+              <span>Press <kbd className="px-1.5 py-0.5 rounded bg-surface-2 border border-border font-mono text-[10px]">ESC</kbd> or click backdrop to close</span>
+              <span className="font-mono text-[11px] uppercase">{modalState.previewType} file</span>
             </div>
           </motion.div>
         </motion.div>
@@ -311,15 +222,14 @@ function CertificateModal({
   );
 }
 
-// ─── Individual Credential Card ───────────────────────────────────────────────
 function CredentialCard({
   item,
-  categoryDef,
+  viewLabel,
   onView,
   prefersReducedMotion,
 }: {
   item: CertificateEvidence;
-  categoryDef: CategoryDef;
+  viewLabel: string;
   onView: () => void;
   prefersReducedMotion: boolean;
 }) {
@@ -329,10 +239,7 @@ function CredentialCard({
   return (
     <motion.div
       variants={prefersReducedMotion ? undefined : fadeInUpVariants}
-      initial={prefersReducedMotion ? undefined : "rest"}
-      whileHover={prefersReducedMotion ? undefined : "hover"}
-      whileTap={prefersReducedMotion ? undefined : "tap"}
-      animate={prefersReducedMotion ? undefined : "rest"}
+      whileHover={prefersReducedMotion ? undefined : { y: -2, transition: { duration: 0.2 } }}
       layout
       className="h-full"
     >
@@ -341,183 +248,100 @@ function CredentialCard({
         onMouseMove={handleMouseMove}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className="relative flex flex-col justify-between rounded-xl overflow-hidden h-full"
+        className="relative flex flex-col justify-between rounded-xl p-5 sm:p-6 h-full bg-surface border border-border transition-all duration-200"
         style={{
-          backgroundColor: "var(--color-surface)",
-          border: `1px solid ${
-            hovered && !prefersReducedMotion ? categoryDef.color.border : "var(--color-border)"
-          }`,
-          padding: "1.25rem",
-          transition: "border-color 0.25s ease, box-shadow 0.25s ease",
           boxShadow:
             hovered && !prefersReducedMotion
-              ? `0 12px 32px rgba(0,0,0,0.45), 0 0 0 1px ${categoryDef.color.border}`
+              ? "0 12px 30px rgba(0,0,0,0.18)"
               : "none",
         }}
       >
         {/* Spotlight dynamic hover glow */}
         {!prefersReducedMotion && (
           <div
-            className="pointer-events-none absolute inset-0"
+            className="pointer-events-none absolute inset-0 rounded-[inherit]"
             style={{
               opacity: hovered ? 1 : 0,
               transition: "opacity 0.25s ease",
-              background: `radial-gradient(280px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), ${categoryDef.color.bg}, transparent 70%)`,
+              background:
+                "radial-gradient(280px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), color-mix(in srgb, currentColor 5%, transparent), transparent 70%)",
             }}
           />
         )}
 
         {/* Card Header & Content */}
         <div className="relative">
-          {/* Top row: Type badge, Preview format badge, and Period */}
+          {/* Top row: Type badge & Period */}
           <div className="flex items-center justify-between gap-2 mb-3">
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span
-                className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide"
-                style={{
-                  backgroundColor: isCert ? "rgba(37,99,235,0.12)" : "rgba(113,113,122,0.12)",
-                  color: isCert ? "var(--color-accent-text)" : "var(--color-text-secondary)",
-                  border: isCert
-                    ? "1px solid rgba(37,99,235,0.25)"
-                    : "1px solid rgba(113,113,122,0.2)",
-                }}
-              >
+              <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-mono uppercase tracking-wide bg-surface-2 border border-border text-text-primary">
                 {isCert ? (
                   <Certificate size={11} aria-hidden="true" />
                 ) : (
                   <BookOpen size={11} aria-hidden="true" />
                 )}
-                {isCert ? "Sertifikasi" : "Pelatihan"}
+                {isCert ? "Certification" : "Training"}
               </span>
 
-              <span
-                className="inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-[10px] font-bold uppercase"
-                style={{
-                  backgroundColor:
-                    item.previewType === "pdf" ? "rgba(239,68,68,0.12)" : "rgba(20,184,166,0.12)",
-                  color: item.previewType === "pdf" ? "#FCA5A5" : "#5EEAD4",
-                  border:
-                    item.previewType === "pdf"
-                      ? "1px solid rgba(239,68,68,0.25)"
-                      : "1px solid rgba(20,184,166,0.25)",
-                }}
-              >
+              <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-mono font-medium uppercase bg-surface-2 border border-border text-text-muted">
                 {item.previewType === "pdf" ? (
                   <FilePdf size={10} aria-hidden="true" />
                 ) : (
                   <ImageIcon size={10} aria-hidden="true" />
                 )}
-                {item.previewType === "pdf" ? "PDF" : "JPEG/JPG"}
+                {item.previewType.toUpperCase()}
               </span>
             </div>
 
-            <span
-              className="text-[10px] font-mono shrink-0"
-              style={{ color: "var(--color-text-muted)" }}
-            >
+            <span className="text-[10px] font-mono text-text-muted shrink-0">
               {item.periodOrYear}
             </span>
           </div>
 
           {/* Category Pill */}
-          <span
-            className="inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide mb-2"
-            style={{
-              backgroundColor: categoryDef.color.bg,
-              color: categoryDef.color.fg,
-              border: `1px solid ${categoryDef.color.border}`,
-            }}
-          >
-            {categoryDef.label}
+          <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-mono uppercase tracking-wider mb-2 bg-surface-2 border border-border text-text-muted">
+            {item.category}
           </span>
 
           {/* Certificate Title */}
-          <h3
-            className="text-sm font-bold leading-snug mt-1"
-            style={{
-              color: "var(--color-text-primary)",
-              fontFamily: "var(--font-heading)",
-            }}
-          >
+          <h3 className="text-sm font-medium leading-snug mt-1 text-text-primary">
             {item.name}
           </h3>
 
           {/* Certificate Issuer */}
-          <p className="text-xs mt-1.5 font-medium" style={{ color: "var(--color-text-secondary)" }}>
+          <p className="text-xs mt-1.5 text-text-secondary">
             {item.issuer}
           </p>
         </div>
 
-        {/* Card Action Buttons: "Lihat Bukti" and "Unduh" */}
-        <div
-          className="relative flex items-center gap-2 mt-4 pt-3.5"
-          style={{ borderTop: "1px solid var(--color-border)" }}
-        >
-          <motion.button
+        {/* Card Action Buttons */}
+        <div className="relative flex items-center gap-2 mt-5 pt-4 border-t border-border">
+          <button
             onClick={onView}
-            aria-label={`Lihat bukti sertifikat: ${item.name}`}
-            initial="rest"
-            whileHover={prefersReducedMotion ? undefined : "hover"}
-            whileTap={prefersReducedMotion ? undefined : "tap"}
-            variants={
-              prefersReducedMotion
-                ? undefined
-                : {
-                    rest: { backgroundColor: "rgba(37,99,235,0.12)", borderColor: "rgba(37,99,235,0.3)" },
-                    hover: { backgroundColor: "rgba(37,99,235,0.22)", borderColor: "rgba(37,99,235,0.5)" },
-                    tap: { scale: 0.97 },
-                  }
-            }
-            className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-            style={{
-              height: "34px",
-              color: "var(--color-accent-text)",
-              border: "1px solid rgba(37,99,235,0.3)",
-              cursor: "pointer",
-              transition: "color 0.15s ease",
-            }}
+            aria-label={`View certificate: ${item.name}`}
+            className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-full text-xs font-medium h-9 bg-surface-2 border border-border text-text-primary hover:bg-surface hover:border-text-primary/40 transition-colors cursor-pointer"
           >
             <Eye size={14} aria-hidden="true" />
-            Lihat Bukti
-          </motion.button>
+            <span>{viewLabel}</span>
+          </button>
 
-          <motion.a
+          <a
             href={item.fileUrl}
             download
-            aria-label={`Unduh berkas sertifikat: ${item.name}`}
-            initial="rest"
-            whileHover={prefersReducedMotion ? undefined : "hover"}
-            whileTap={prefersReducedMotion ? undefined : "tap"}
-            variants={
-              prefersReducedMotion
-                ? undefined
-                : {
-                    rest: { scale: 1, color: "var(--color-text-secondary)" },
-                    hover: { scale: 1.08, color: "var(--color-text-primary)" },
-                    tap: { scale: 0.92 },
-                  }
-            }
-            className="inline-flex items-center justify-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-            style={{
-              width: "34px",
-              height: "34px",
-              backgroundColor: "var(--color-surface-2)",
-              border: "1px solid var(--color-border)",
-              flexShrink: 0,
-              textDecoration: "none",
-            }}
-            title="Unduh Berkas"
+            aria-label={`Download certificate file: ${item.name}`}
+            className="inline-flex items-center justify-center rounded-full w-9 h-9 bg-surface-2 border border-border text-text-secondary hover:text-text-primary transition-colors shrink-0"
+            title="Download Document"
           >
             <DownloadSimple size={14} aria-hidden="true" />
-          </motion.a>
+          </a>
         </div>
       </div>
     </motion.div>
   );
 }
 
-// ─── Main Credentials Section ────────────────────────────────────────────────
 export function CredentialsSection() {
+  const { labels, allCertificatesBundleUrl } = usePortfolioContent();
   const prefersReducedMotion = usePrefersReducedMotion();
   const [activeTab, setActiveTab] = useState<TabFilter>("Semua");
 
@@ -529,15 +353,14 @@ export function CredentialsSection() {
     previewType: "pdf",
   });
 
-  // Filter individual credentials (exclude bundle from grid, since bundle has dedicated hero CTA)
   const individualCertificates = allCertificates.filter((item) => !item.isBundle);
   const bundleCertificate = allCertificates.find((item) => item.isBundle) || {
     id: "gabungan-seluruh-sertifikat",
-    name: "Gabungan seluruh sertifikat",
+    name: labels.credentials.bundleTitle,
     issuer: "Universitas Gunadarma / BNSP / Cisco / Microsoft",
     periodOrYear: "2022 – 2026",
     category: "Bundel PDF" as const,
-    fileUrl: portfolioData.allCertificatesBundleUrl,
+    fileUrl: allCertificatesBundleUrl,
     previewType: "pdf" as const,
     isBundle: true,
   };
@@ -568,142 +391,77 @@ export function CredentialsSection() {
     <>
       <section
         id="sertifikasi"
-        className="border-b border-border py-16 lg:py-24 relative overflow-hidden"
+        className="border-b border-border py-20 lg:py-28 relative overflow-hidden bg-bg"
       >
-        {/* Ambient subtle glow background */}
-        <div
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(ellipse 65% 45% at 50% 0%, rgba(37,99,235,0.06) 0%, transparent 65%)",
-          }}
-        />
-
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 relative">
           {/* Section Heading */}
           <motion.div
-            className="mb-8"
+            className="mb-10 text-left"
             variants={prefersReducedMotion ? undefined : fadeInUpVariants}
             initial={initial}
             whileInView="visible"
             viewport={VIEWPORT}
           >
-            <p
-              className="text-xs font-semibold uppercase tracking-wider"
-              style={{ color: "var(--color-accent-text)" }}
-            >
-              Validasi Keahlian &amp; Rekam Jejak
-            </p>
-            <h2
-              className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl"
-              style={{ color: "var(--color-text-primary)", letterSpacing: "-0.025em" }}
-            >
-              Sertifikasi &amp;{" "}
-              <span
-                style={{
-                  background: "linear-gradient(135deg, #60A5FA 0%, #C4B5FD 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                }}
-              >
-                Pelatihan Terverifikasi
-              </span>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="font-serif-italic text-sm text-text-muted">07</span>
+              <span className="h-px w-6 bg-border" />
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-text-muted">
+                {labels.credentials.sectionLabel}
+              </p>
+            </div>
+            <h2 className="text-3xl font-medium tracking-tight sm:text-4xl text-text-primary">
+              {labels.credentials.title}{" "}
+              <span className="font-serif-italic font-normal">{labels.credentials.titleAccent}</span>
             </h2>
-            <p className="mt-2 text-sm max-w-2xl" style={{ color: "var(--color-text-secondary)" }}>
-              Daftar lengkap 14 sertifikat resmi berstandar nasional (BNSP), kursus data science,
-              pemrograman Go &amp; Oracle, jaringan komputer, serta uji keahlian. Klik{" "}
-              <strong style={{ color: "var(--color-text-primary)" }}>Lihat Bukti</strong> untuk
-              membuka dokumen asli langsung di halaman ini.
+            <p className="mt-3 text-sm max-w-2xl text-text-secondary leading-relaxed">
+              {labels.credentials.description}
             </p>
           </motion.div>
 
           {/* Dedicated Bundle Banner CTA (Top) */}
           <motion.div
-            className="mb-8 rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 relative overflow-hidden"
+            className="mb-10 rounded-2xl p-6 sm:p-7 flex flex-col md:flex-row md:items-center justify-between gap-5 bg-surface border border-border"
             variants={prefersReducedMotion ? undefined : fadeInUpVariants}
             initial={initial}
             whileInView="visible"
             viewport={VIEWPORT}
-            style={{
-              backgroundColor: "var(--color-surface)",
-              border: "1px solid rgba(37,99,235,0.35)",
-              boxShadow: "0 0 24px rgba(37,99,235,0.12)",
-            }}
           >
-            <div className="flex items-start sm:items-center gap-3.5">
-              <div
-                className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
-                style={{
-                  backgroundColor: "rgba(37,99,235,0.15)",
-                  color: "#60A5FA",
-                  border: "1px solid rgba(37,99,235,0.3)",
-                }}
-              >
-                <Package size={22} aria-hidden="true" />
+            <div className="flex items-start sm:items-center gap-4">
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 bg-surface-2 border border-border text-text-primary">
+                <Package size={24} aria-hidden="true" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3
-                    className="text-sm sm:text-base font-bold"
-                    style={{ color: "var(--color-text-primary)" }}
-                  >
-                    Gabungan Seluruh Sertifikat (PDF Lengkap)
+                  <h3 className="text-sm sm:text-base font-medium text-text-primary">
+                    {labels.credentials.bundleTitle}
                   </h3>
-                  <span
-                    className="hidden sm:inline-block text-[10px] font-bold px-2 py-0.5 rounded-full uppercase"
-                    style={{
-                      backgroundColor: "rgba(37,99,235,0.15)",
-                      color: "#93C5FD",
-                      border: "1px solid rgba(37,99,235,0.3)",
-                    }}
-                  >
-                    14 Dokumen
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-surface-2 border border-border text-text-muted">
+                    14 Files
                   </span>
                 </div>
-                <p className="text-xs mt-0.5" style={{ color: "var(--color-text-secondary)" }}>
-                  Dokumen bundel terpadu berisi seluruh sertifikat kompetensi BNSP, kursus, dan pelatihan.
+                <p className="text-xs mt-1 text-text-secondary">
+                  {labels.credentials.bundleDesc}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2.5 shrink-0 self-end md:self-center">
-              <motion.button
+            <div className="flex items-center gap-2.5 shrink-0 self-start md:self-center">
+              <button
                 onClick={() => openPreview(bundleCertificate)}
-                initial={prefersReducedMotion ? undefined : "rest"}
-                whileHover={prefersReducedMotion ? undefined : "hover"}
-                whileTap={prefersReducedMotion ? undefined : "tap"}
-                variants={prefersReducedMotion ? undefined : buttonHoverVariants}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                style={{
-                  backgroundColor: "var(--color-surface-2)",
-                  border: "1px solid var(--color-border)",
-                  color: "var(--color-text-primary)",
-                  cursor: "pointer",
-                }}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium bg-surface-2 border border-border text-text-primary hover:bg-surface transition-colors cursor-pointer"
               >
                 <Eye size={14} aria-hidden="true" />
-                Lihat Preview Bundel
-              </motion.button>
+                <span>Preview</span>
+              </button>
 
-              <motion.a
+              <a
                 href={bundleCertificate.fileUrl}
                 download
-                initial={prefersReducedMotion ? undefined : "rest"}
-                whileHover={prefersReducedMotion ? undefined : "hover"}
-                whileTap={prefersReducedMotion ? undefined : "tap"}
-                variants={prefersReducedMotion ? undefined : buttonHoverVariants}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                style={{
-                  background: "linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)",
-                  color: "#ffffff",
-                  boxShadow: "0 0 16px rgba(37,99,235,0.35)",
-                  textDecoration: "none",
-                }}
+                className="btn-pill-primary inline-flex items-center gap-1.5 text-xs font-medium"
               >
                 <DownloadSimple size={14} aria-hidden="true" />
-                Unduh Bundel (PDF)
-              </motion.a>
+                <span>{labels.credentials.downloadBundle}</span>
+              </a>
             </div>
           </motion.div>
 
@@ -715,67 +473,52 @@ export function CredentialsSection() {
             whileInView="visible"
             viewport={VIEWPORT}
             role="tablist"
-            aria-label="Filter kategori sertifikat"
+            aria-label="Filter category"
           >
-            {CATEGORIES.map((cat) => {
-              const count =
-                cat.id === "Semua"
-                  ? individualCertificates.length
-                  : individualCertificates.filter((c) => c.category === cat.id).length;
-              const isActive = activeTab === cat.id;
+            {/* "All" Tab */}
+            <button
+              role="tab"
+              aria-selected={activeTab === "Semua"}
+              onClick={() => setActiveTab("Semua")}
+              className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium transition-colors cursor-pointer ${
+                activeTab === "Semua"
+                  ? "bg-text-primary text-bg font-semibold"
+                  : "bg-surface border border-border text-text-secondary hover:text-text-primary"
+              }`}
+            >
+              <span>{labels.credentials.allTab}</span>
+              <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
+                activeTab === "Semua" ? "bg-bg/20 text-bg" : "bg-surface-2 text-text-muted"
+              }`}>
+                {individualCertificates.length}
+              </span>
+            </button>
+
+            {/* Individual Category Tabs */}
+            {CATEGORY_KEYS.map((catKey) => {
+              const label = labels.credentials.categories[catKey] || catKey;
+              const count = individualCertificates.filter((c) => c.category === catKey).length;
+              const isActive = activeTab === catKey;
 
               return (
-                <motion.button
-                  key={cat.id}
+                <button
+                  key={catKey}
                   role="tab"
                   aria-selected={isActive}
-                  onClick={() => setActiveTab(cat.id)}
-                  layout
-                  initial={prefersReducedMotion ? undefined : "rest"}
-                  whileHover={prefersReducedMotion ? undefined : "hover"}
-                  whileTap={prefersReducedMotion ? undefined : "tap"}
-                  variants={
-                    prefersReducedMotion
-                      ? undefined
-                      : {
-                          rest: { scale: 1, y: 0 },
-                          hover: { scale: 1.03, y: -1 },
-                          tap: { scale: 0.97, y: 0 },
-                        }
-                  }
-                  className="relative inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                  style={{
-                    backgroundColor: isActive ? cat.color.bg : "var(--color-surface)",
-                    border: `1px solid ${isActive ? cat.color.border : "var(--color-border)"}`,
-                    color: isActive ? cat.color.fg : "var(--color-text-secondary)",
-                    boxShadow: isActive ? `0 0 14px ${cat.color.bg}` : "none",
-                    cursor: "pointer",
-                    transition:
-                      "background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease",
-                  }}
+                  onClick={() => setActiveTab(catKey)}
+                  className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium transition-colors cursor-pointer ${
+                    isActive
+                      ? "bg-text-primary text-bg font-semibold"
+                      : "bg-surface border border-border text-text-secondary hover:text-text-primary"
+                  }`}
                 >
-                  {/* Active indicator dot */}
-                  {isActive && !prefersReducedMotion && (
-                    <motion.span
-                      layoutId="credential-tab-dot"
-                      className="h-1.5 w-1.5 rounded-full shrink-0"
-                      style={{ backgroundColor: cat.color.fg }}
-                      transition={{ type: "spring", stiffness: 450, damping: 32 }}
-                    />
-                  )}
-                  {cat.label}
-                  <span
-                    className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold"
-                    style={{
-                      backgroundColor: isActive
-                        ? "rgba(255,255,255,0.16)"
-                        : "var(--color-surface-2)",
-                      color: isActive ? cat.color.fg : "var(--color-text-muted)",
-                    }}
-                  >
+                  <span>{label}</span>
+                  <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
+                    isActive ? "bg-bg/20 text-bg" : "bg-surface-2 text-text-muted"
+                  }`}>
                     {count}
                   </span>
-                </motion.button>
+                </button>
               );
             })}
           </motion.div>
@@ -784,79 +527,59 @@ export function CredentialsSection() {
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={activeTab}
-              className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+              className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
               variants={prefersReducedMotion ? undefined : tabGridVariants}
               initial={prefersReducedMotion ? "visible" : "hidden"}
               animate="visible"
               exit={prefersReducedMotion ? undefined : "exit"}
             >
-              {displayedCertificates.map((cert) => {
-                const catDef =
-                  CATEGORIES.find((c) => c.id === cert.category) || CATEGORIES[0];
-                return (
-                  <CredentialCard
-                    key={cert.id}
-                    item={cert}
-                    categoryDef={catDef}
-                    onView={() => openPreview(cert)}
-                    prefersReducedMotion={prefersReducedMotion}
-                  />
-                );
-              })}
+              {displayedCertificates.map((cert) => (
+                <CredentialCard
+                  key={cert.id}
+                  item={cert}
+                  viewLabel={labels.credentials.viewEvidence}
+                  onView={() => openPreview(cert)}
+                  prefersReducedMotion={prefersReducedMotion}
+                />
+              ))}
             </motion.div>
           </AnimatePresence>
 
           {/* Bottom Section Footer CTA */}
           <motion.div
-            className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-3"
+            className="mt-14 flex flex-col sm:flex-row items-center justify-center gap-3"
             variants={prefersReducedMotion ? undefined : fadeInUpVariants}
             initial={initial}
             whileInView="visible"
             viewport={VIEWPORT}
           >
-            <motion.button
+            <button
               onClick={() => openPreview(bundleCertificate)}
-              initial={prefersReducedMotion ? undefined : "rest"}
-              whileHover={prefersReducedMotion ? undefined : "hover"}
-              whileTap={prefersReducedMotion ? undefined : "tap"}
-              variants={prefersReducedMotion ? undefined : buttonHoverVariants}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-              style={{
-                backgroundColor: "var(--color-surface)",
-                border: "1px solid var(--color-border)",
-                color: "var(--color-text-primary)",
-                cursor: "pointer",
-              }}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-xs font-medium bg-surface border border-border text-text-primary hover:bg-surface-2 transition-colors cursor-pointer"
             >
-              <FileText size={18} aria-hidden="true" />
-              Lihat Preview Gabungan Seluruh Sertifikat
-            </motion.button>
+              <FileText size={16} aria-hidden="true" />
+              <span>Preview All 14 Certificates</span>
+            </button>
 
-            <motion.a
+            <a
               href={bundleCertificate.fileUrl}
               download
-              initial={prefersReducedMotion ? undefined : "rest"}
-              whileHover={prefersReducedMotion ? undefined : "hover"}
-              whileTap={prefersReducedMotion ? undefined : "tap"}
-              variants={prefersReducedMotion ? undefined : buttonHoverVariants}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-              style={{
-                background: "linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)",
-                color: "#ffffff",
-                boxShadow: "0 0 28px rgba(37,99,235,0.35), inset 0 1px 0 rgba(255,255,255,0.12)",
-                textDecoration: "none",
-              }}
+              className="w-full sm:w-auto btn-pill-primary inline-flex items-center justify-center gap-2 text-xs font-medium py-3 px-7"
             >
-              <Package size={18} aria-hidden="true" />
-              Unduh Seluruh Sertifikat (PDF)
-              <DownloadSimple size={16} aria-hidden="true" />
-            </motion.a>
+              <Package size={16} aria-hidden="true" />
+              <span>{labels.credentials.downloadBundle}</span>
+              <DownloadSimple size={14} aria-hidden="true" />
+            </a>
           </motion.div>
         </div>
       </section>
 
       {/* In-Page Certificate Preview Modal */}
-      <CertificateModal modalState={modalState} onClose={closeModal} />
+      <CertificateModal
+        modalState={modalState}
+        onClose={closeModal}
+        closeLabel={labels.credentials.closeModal}
+      />
     </>
   );
 }

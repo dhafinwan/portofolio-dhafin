@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
-import { portfolioData } from "@/data/content";
-import { Briefcase, GraduationCap, MapPin, CheckCircle } from "@phosphor-icons/react";
+import { usePortfolioContent } from "@/data/content";
+import { Briefcase, GraduationCap, MapPin, Check } from "@phosphor-icons/react";
 import {
   usePrefersReducedMotion,
   fadeInUpVariants,
@@ -9,14 +9,12 @@ import {
 } from "@/lib/motion";
 
 function TimelineItem({
-  dot,
   title,
   subtitle,
   period,
   location,
   children,
 }: {
-  dot?: React.ReactNode;
   title: string;
   subtitle: string;
   period: string;
@@ -24,63 +22,32 @@ function TimelineItem({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative pl-8">
+    <div className="relative pl-7">
       {/* Vertical line */}
-      <div
-        className="absolute left-3 top-8 bottom-0 w-px"
-        style={{ backgroundColor: "var(--color-border)" }}
-      />
+      <div className="absolute left-2.5 top-3.5 bottom-0 w-px bg-border" />
       {/* Dot */}
-      <div
-        className="absolute left-0 top-1.5 flex h-6 w-6 items-center justify-center rounded-full"
-        style={{
-          backgroundColor: "var(--color-surface-2)",
-          border: "2px solid var(--color-accent)",
-          boxShadow: "0 0 0 4px rgba(37,99,235,0.1)",
-        }}
-      >
-        {dot || (
-          <span
-            className="h-2 w-2 rounded-full"
-            style={{ backgroundColor: "var(--color-accent)" }}
-          />
-        )}
+      <div className="absolute left-0 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-surface border border-border">
+        <span className="h-1.5 w-1.5 rounded-full bg-text-primary" />
       </div>
 
       {/* Content */}
       <div className="pb-8">
-        <div className="flex flex-wrap items-start justify-between gap-2 mb-1">
+        <div className="flex flex-wrap items-start justify-between gap-2 mb-1.5">
           <div>
-            <h4
-              className="text-base font-bold"
-              style={{
-                color: "var(--color-text-primary)",
-                fontFamily: "var(--font-heading)",
-              }}
-            >
+            <h4 className="text-base font-medium text-text-primary leading-snug">
               {title}
             </h4>
-            <p
-              className="text-xs font-semibold mt-0.5"
-              style={{ color: "var(--color-accent-text)" }}
-            >
+            <p className="text-xs font-medium text-text-secondary mt-0.5">
               {subtitle}
             </p>
           </div>
-          <span
-            className="rounded-md px-2.5 py-0.5 text-[11px] font-mono font-medium shrink-0"
-            style={{
-              backgroundColor: "var(--color-surface-2)",
-              color: "var(--color-text-muted)",
-              border: "1px solid var(--color-border)",
-            }}
-          >
+          <span className="rounded-full px-2.5 py-0.5 text-[11px] font-mono font-medium bg-surface-2 border border-border text-text-muted shrink-0">
             {period}
           </span>
         </div>
 
         {location && (
-          <div className="flex items-center gap-1.5 text-xs mb-3" style={{ color: "var(--color-text-muted)" }}>
+          <div className="flex items-center gap-1.5 text-xs text-text-muted mb-3">
             <MapPin size={13} aria-hidden="true" />
             <span>{location}</span>
           </div>
@@ -93,56 +60,36 @@ function TimelineItem({
 }
 
 export function TimelineSection() {
-  const { experience, education } = portfolioData;
+  const { experience, education, labels } = usePortfolioContent();
   const prefersReducedMotion = usePrefersReducedMotion();
   const containerVariants = prefersReducedMotion ? undefined : viewportContainerVariants;
   const itemVariants = prefersReducedMotion ? undefined : fadeInUpVariants;
   const initial = prefersReducedMotion ? "visible" : "hidden";
 
   return (
-    <section id="riwayat" className="border-b border-border py-16 lg:py-24 relative overflow-hidden">
-      {/* Background ambient glow */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 50% 30% at 100% 100%, rgba(34,197,94,0.04) 0%, transparent 60%)",
-        }}
-      />
-
+    <section id="riwayat" className="border-b border-border py-20 lg:py-28 relative overflow-hidden bg-bg">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 relative">
         {/* Section Header */}
         <motion.div
-          className="mb-12"
+          className="mb-14 text-left"
           variants={prefersReducedMotion ? undefined : fadeInUpVariants}
           initial={initial}
           whileInView="visible"
           viewport={VIEWPORT}
         >
-          <p
-            className="text-xs font-semibold uppercase tracking-wider"
-            style={{ color: "var(--color-accent-text)" }}
-          >
-            Rekam Jejak &amp; Disiplin
-          </p>
-          <h2
-            className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl"
-            style={{ color: "var(--color-text-primary)", letterSpacing: "-0.025em" }}
-          >
-            Pengalaman &amp;{" "}
-            <span
-              style={{
-                background: "linear-gradient(135deg, #86EFAC 0%, #60A5FA 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
-            >
-              Pendidikan
-            </span>
+          <div className="flex items-center gap-2 mb-3">
+            <span className="font-serif-italic text-sm text-text-muted">06</span>
+            <span className="h-px w-6 bg-border" />
+            <p className="text-xs font-medium uppercase tracking-[0.2em] text-text-muted">
+              {labels.timeline.sectionLabel}
+            </p>
+          </div>
+          <h2 className="text-3xl font-medium tracking-tight sm:text-4xl text-text-primary">
+            {labels.timeline.title}{" "}
+            <span className="font-serif-italic font-normal">{labels.timeline.titleAccent}</span>
           </h2>
-          <p className="mt-2 text-sm max-w-2xl" style={{ color: "var(--color-text-secondary)" }}>
-            Pengalaman operasional siaran langsung yang menuntut keandalan sistem tinggi dan fondasi akademik ilmu komputer berstandar akreditasi.
+          <p className="mt-3 text-sm max-w-2xl text-text-secondary leading-relaxed">
+            {labels.timeline.description}
           </p>
         </motion.div>
 
@@ -157,42 +104,22 @@ export function TimelineSection() {
           {/* Work Experience Column */}
           <motion.div
             variants={itemVariants}
-            whileHover={prefersReducedMotion ? undefined : { y: -3, transition: { duration: 0.22 } }}
-            className="rounded-2xl overflow-hidden h-full"
-            style={{
-              backgroundColor: "var(--color-surface)",
-              border: "1px solid var(--color-border)",
-              boxShadow: "0 8px 28px rgba(0,0,0,0.3)",
-            }}
+            whileHover={prefersReducedMotion ? undefined : { y: -2, transition: { duration: 0.2 } }}
+            className="rounded-2xl overflow-hidden h-full bg-surface border border-border"
           >
             {/* Column Header */}
-            <div
-              className="flex items-center gap-3 px-6 py-4"
-              style={{
-                borderBottom: "1px solid var(--color-border)",
-                backgroundColor: "var(--color-surface-2)",
-              }}
-            >
-              <div
-                className="flex h-9 w-9 items-center justify-center rounded-xl"
-                style={{
-                  backgroundColor: "rgba(37,99,235,0.15)",
-                  border: "1px solid rgba(37,99,235,0.3)",
-                }}
-              >
-                <Briefcase size={18} style={{ color: "var(--color-accent-text)" }} />
+            <div className="flex items-center gap-3 px-6 sm:px-8 py-5 border-b border-border bg-surface-2/40">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-surface-2 border border-border text-text-primary">
+                <Briefcase size={18} />
               </div>
               <div>
-                <h3 className="text-sm font-bold" style={{ color: "var(--color-text-primary)" }}>
-                  Pengalaman Kerja
+                <h3 className="text-sm font-medium text-text-primary">
+                  {labels.timeline.experienceTab}
                 </h3>
-                <p className="text-[11px]" style={{ color: "var(--color-text-muted)" }}>
-                  Operasional &amp; Troubleshooting Jaringan
-                </p>
               </div>
             </div>
 
-            <div className="p-6">
+            <div className="p-6 sm:p-8">
               {experience.map((exp, idx) => (
                 <TimelineItem
                   key={idx}
@@ -202,14 +129,11 @@ export function TimelineSection() {
                 >
                   <ul className="mt-3 space-y-2">
                     {exp.points.map((pt, pIdx) => (
-                      <li key={pIdx} className="flex items-start gap-2.5 text-xs leading-relaxed">
-                        <CheckCircle
-                          size={15}
-                          weight="bold"
-                          className="mt-0.5 shrink-0"
-                          style={{ color: "var(--color-accent)" }}
-                        />
-                        <span style={{ color: "var(--color-text-secondary)" }}>{pt}</span>
+                      <li key={pIdx} className="flex items-start gap-2.5 text-xs leading-relaxed text-text-secondary">
+                        <span className="mt-0.5 flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full bg-surface-2 border border-border text-text-primary">
+                          <Check size={9} weight="bold" />
+                        </span>
+                        <span>{pt}</span>
                       </li>
                     ))}
                   </ul>
@@ -221,42 +145,22 @@ export function TimelineSection() {
           {/* Education Column */}
           <motion.div
             variants={itemVariants}
-            whileHover={prefersReducedMotion ? undefined : { y: -3, transition: { duration: 0.22 } }}
-            className="rounded-2xl overflow-hidden h-full"
-            style={{
-              backgroundColor: "var(--color-surface)",
-              border: "1px solid var(--color-border)",
-              boxShadow: "0 8px 28px rgba(0,0,0,0.3)",
-            }}
+            whileHover={prefersReducedMotion ? undefined : { y: -2, transition: { duration: 0.2 } }}
+            className="rounded-2xl overflow-hidden h-full bg-surface border border-border"
           >
             {/* Column Header */}
-            <div
-              className="flex items-center gap-3 px-6 py-4"
-              style={{
-                borderBottom: "1px solid var(--color-border)",
-                backgroundColor: "var(--color-surface-2)",
-              }}
-            >
-              <div
-                className="flex h-9 w-9 items-center justify-center rounded-xl"
-                style={{
-                  backgroundColor: "rgba(139,92,246,0.15)",
-                  border: "1px solid rgba(139,92,246,0.3)",
-                }}
-              >
-                <GraduationCap size={18} style={{ color: "#C4B5FD" }} />
+            <div className="flex items-center gap-3 px-6 sm:px-8 py-5 border-b border-border bg-surface-2/40">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-surface-2 border border-border text-text-primary">
+                <GraduationCap size={18} />
               </div>
               <div>
-                <h3 className="text-sm font-bold" style={{ color: "var(--color-text-primary)" }}>
-                  Pendidikan Formal
+                <h3 className="text-sm font-medium text-text-primary">
+                  {labels.timeline.educationTab}
                 </h3>
-                <p className="text-[11px]" style={{ color: "var(--color-text-muted)" }}>
-                  Fondasi Sains Komputer &amp; Riset Data
-                </p>
               </div>
             </div>
 
-            <div className="p-6">
+            <div className="p-6 sm:p-8">
               <TimelineItem
                 title={education.degree}
                 subtitle={education.institution}
@@ -264,43 +168,25 @@ export function TimelineSection() {
                 location={education.location}
               >
                 {/* GPA badge */}
-                <div
-                  className="inline-flex items-center gap-2.5 rounded-lg px-3.5 py-1.5 mb-4"
-                  style={{
-                    background: "linear-gradient(135deg, rgba(37,99,235,0.12) 0%, rgba(139,92,246,0.08) 100%)",
-                    border: "1px solid rgba(37,99,235,0.3)",
-                  }}
-                >
-                  <span className="text-sm">🎓</span>
-                  <span className="text-xs font-medium" style={{ color: "var(--color-text-secondary)" }}>
-                    IPK Kumulatif:
+                <div className="inline-flex items-center gap-2.5 rounded-lg px-3.5 py-1.5 mb-5 bg-surface-2 border border-border">
+                  <span className="text-xs font-mono font-medium text-text-muted">
+                    GPA / IPK:
                   </span>
-                  <span
-                    className="text-sm font-extrabold"
-                    style={{ color: "var(--color-accent-text)" }}
-                  >
+                  <span className="text-xs font-mono font-bold text-text-primary">
                     {education.gpa}
                   </span>
                 </div>
 
                 {/* Courses */}
-                <div className="mb-4">
-                  <p
-                    className="text-[11px] font-semibold uppercase tracking-wider mb-2"
-                    style={{ color: "var(--color-text-muted)" }}
-                  >
-                    Mata Kuliah Relevan
+                <div className="mb-5">
+                  <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-text-muted mb-2.5">
+                    Relevant Coursework
                   </p>
                   <div className="flex flex-wrap gap-1.5">
                     {education.relevantCourses.map((c, cIdx) => (
                       <span
                         key={cIdx}
-                        className="rounded-md px-2.5 py-0.5 text-[11px] font-medium"
-                        style={{
-                          backgroundColor: "var(--color-surface-2)",
-                          color: "var(--color-text-secondary)",
-                          border: "1px solid var(--color-border)",
-                        }}
+                        className="rounded-md px-2.5 py-0.5 text-[11px] font-mono font-medium bg-surface-2 border border-border text-text-secondary"
                       >
                         {c}
                       </span>
@@ -310,20 +196,14 @@ export function TimelineSection() {
 
                 {/* Activities */}
                 <div>
-                  <p
-                    className="text-[11px] font-semibold uppercase tracking-wider mb-2"
-                    style={{ color: "var(--color-text-muted)" }}
-                  >
-                    Aktivitas &amp; Kontribusi
+                  <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-text-muted mb-2">
+                    Activities &amp; Highlights
                   </p>
                   <ul className="space-y-1.5">
                     {education.activities.map((act, aIdx) => (
-                      <li key={aIdx} className="flex items-start gap-2 text-xs">
-                        <span
-                          className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full"
-                          style={{ backgroundColor: "#C4B5FD", opacity: 0.8 }}
-                        />
-                        <span style={{ color: "var(--color-text-secondary)" }}>{act}</span>
+                      <li key={aIdx} className="flex items-start gap-2 text-xs text-text-secondary leading-relaxed">
+                        <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-text-primary/60" />
+                        <span>{act}</span>
                       </li>
                     ))}
                   </ul>

@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { motion } from "motion/react";
-import { portfolioData } from "@/data/content";
+import { usePortfolioContent } from "@/data/content";
 import {
   usePrefersReducedMotion,
   fadeInUpVariants,
@@ -11,75 +11,31 @@ import {
   ChartBar,
   Code,
   Wrench,
-  CheckCircle,
+  Check,
 } from "@phosphor-icons/react";
 
-const serviceMeta: Record<
-  number,
-  {
-    icon: React.ReactNode;
-    accent: { bg: string; border: string; fg: string; glow: string };
-    highlights: string[];
-  }
-> = {
-  1: {
-    icon: <ChartBar size={24} weight="duotone" aria-hidden="true" />,
-    accent: {
-      bg: "rgba(59,130,246,0.12)",
-      border: "rgba(59,130,246,0.35)",
-      fg: "#60A5FA",
-      glow: "rgba(59,130,246,0.12)",
-    },
-    highlights: [
-      "Pengumpulan & pembersihan dataset kotor",
-      "Penyusunan laporan berkala & visualisasi ringkas",
-      "Dashboard analitik interaktif & eksplorasi wawasan",
-    ],
-  },
-  2: {
-    icon: <Code size={24} weight="duotone" aria-hidden="true" />,
-    accent: {
-      bg: "rgba(139,92,246,0.12)",
-      border: "rgba(139,92,246,0.35)",
-      fg: "#C4B5FD",
-      glow: "rgba(139,92,246,0.12)",
-    },
-    highlights: [
-      "Pengembangan aplikasi web yang responsif & praktis",
-      "Skrip otomasi Python untuk tugas rutin berulang",
-      "Integrasi API & alur pemrosesan data otomatis",
-    ],
-  },
-  3: {
-    icon: <Wrench size={24} weight="duotone" aria-hidden="true" />,
-    accent: {
-      bg: "rgba(34,197,94,0.12)",
-      border: "rgba(34,197,94,0.35)",
-      fg: "#86EFAC",
-      glow: "rgba(34,197,94,0.12)",
-    },
-    highlights: [
-      "Troubleshooting perangkat keras & sistem operasi",
-      "Konfigurasi dan pengawasan stabilitas jaringan LAN",
-      "Pendampingan operasional teknis & live streaming",
-    ],
-  },
+const stepIcons: Record<number, React.ReactNode> = {
+  1: <ChartBar size={22} weight="regular" aria-hidden="true" />,
+  2: <Code size={22} weight="regular" aria-hidden="true" />,
+  3: <Wrench size={22} weight="regular" aria-hidden="true" />,
 };
 
 function ServiceCard({
   step,
   title,
   description,
+  highlights,
   prefersReducedMotion,
 }: {
   step: number;
   title: string;
   description: string;
+  highlights: string[];
   prefersReducedMotion: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState(false);
-  const meta = serviceMeta[step] || serviceMeta[1];
+  const icon = stepIcons[step] || stepIcons[1];
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!ref.current || prefersReducedMotion) return;
@@ -91,8 +47,7 @@ function ServiceCard({
   return (
     <motion.div
       variants={prefersReducedMotion ? undefined : fadeInUpVariants}
-      whileHover={prefersReducedMotion ? undefined : { y: -4, transition: { duration: 0.22 } }}
-      whileTap={prefersReducedMotion ? undefined : { scale: 0.98 }}
+      whileHover={prefersReducedMotion ? undefined : { y: -3, transition: { duration: 0.2 } }}
       className="relative flex flex-col h-full"
     >
       <div
@@ -100,149 +55,95 @@ function ServiceCard({
         onMouseMove={handleMouseMove}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className="relative flex flex-col justify-between rounded-2xl overflow-hidden p-6 sm:p-7 h-full"
+        className="relative flex flex-col justify-between rounded-2xl p-7 sm:p-8 h-full bg-surface border border-border transition-all duration-200"
         style={{
-          backgroundColor: "var(--color-surface)",
-          border: `1px solid ${hovered && !prefersReducedMotion ? meta.accent.border : "var(--color-border)"}`,
-          transition: "border-color 0.25s ease, box-shadow 0.25s ease",
           boxShadow:
             hovered && !prefersReducedMotion
-              ? `0 14px 36px rgba(0,0,0,0.45), 0 0 0 1px ${meta.accent.border}`
+              ? "0 14px 34px rgba(0,0,0,0.18)"
               : "none",
         }}
       >
-        {/* Spotlight */}
+        {/* Subtle mouse spotlight */}
         {!prefersReducedMotion && (
           <div
             className="pointer-events-none absolute inset-0 rounded-2xl"
             style={{
               opacity: hovered ? 1 : 0,
               transition: "opacity 0.25s ease",
-              background: `radial-gradient(320px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), ${meta.accent.glow}, transparent 70%)`,
+              background:
+                "radial-gradient(320px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), color-mix(in srgb, currentColor 5%, transparent), transparent 70%)",
             }}
           />
         )}
 
-        {/* Card Header: Icon & Step Number */}
+        {/* Card Header: Step Index & Icon */}
         <div>
-          <div className="relative flex items-center justify-between mb-5">
-            <div
-              className="flex h-12 w-12 items-center justify-center rounded-xl"
-              style={{
-                backgroundColor: meta.accent.bg,
-                border: `1px solid ${meta.accent.border}`,
-                color: meta.accent.fg,
-              }}
-            >
-              {meta.icon}
+          <div className="relative flex items-center justify-between mb-6">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-surface-2 border border-border text-text-primary">
+              {icon}
             </div>
-            <span
-              className="font-mono text-3xl font-extrabold tabular-nums"
-              style={{ color: "var(--color-border-hover)", lineHeight: 1 }}
-            >
+            <span className="font-serif-italic text-3xl sm:text-4xl text-text-muted select-none">
               {String(step).padStart(2, "0")}
             </span>
           </div>
 
           {/* Title & Description */}
           <div className="relative">
-            <h3
-              className="text-lg font-bold mb-2.5 leading-snug"
-              style={{
-                color: "var(--color-text-primary)",
-                fontFamily: "var(--font-heading)",
-              }}
-            >
+            <h3 className="text-lg font-medium mb-2.5 leading-snug text-text-primary">
               {title}
             </h3>
-            <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>
+            <p className="text-sm leading-relaxed text-text-secondary">
               {description}
             </p>
           </div>
         </div>
 
         {/* Capabilities Bullet Points */}
-        <div
-          className="relative mt-6 pt-5 space-y-2.5"
-          style={{ borderTop: "1px solid var(--color-border)" }}
-        >
-          {meta.highlights.map((point, idx) => (
+        <div className="relative mt-8 pt-5 space-y-2.5 border-t border-border">
+          {highlights.map((point, idx) => (
             <div key={idx} className="flex items-start gap-2.5 text-xs leading-relaxed">
-              <CheckCircle
-                size={16}
-                weight="fill"
-                className="mt-0.5 shrink-0"
-                style={{ color: meta.accent.fg }}
-              />
-              <span style={{ color: "var(--color-text-secondary)" }}>{point}</span>
+              <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-surface-2 border border-border text-text-primary">
+                <Check size={10} weight="bold" />
+              </span>
+              <span className="text-text-secondary">{point}</span>
             </div>
           ))}
         </div>
-
-        {/* Bottom accent gradient bar on hover */}
-        <div
-          className="absolute bottom-0 left-0 right-0 h-0.5 rounded-b-2xl"
-          style={{
-            background: `linear-gradient(90deg, ${meta.accent.fg}, transparent)`,
-            opacity: hovered ? 1 : 0,
-            transition: "opacity 0.25s ease",
-          }}
-        />
       </div>
     </motion.div>
   );
 }
 
 export function WorkflowSection() {
-  const { workflow } = portfolioData;
+  const { workflow, labels } = usePortfolioContent();
   const prefersReducedMotion = usePrefersReducedMotion();
   const containerVariants = prefersReducedMotion ? undefined : viewportContainerVariants;
   const initial = prefersReducedMotion ? "visible" : "hidden";
 
   return (
-    <section id="layanan" className="border-b border-border py-16 lg:py-24 relative overflow-hidden">
-      {/* Background glow */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 60% 40% at 50% 100%, rgba(37,99,235,0.04) 0%, transparent 60%)",
-        }}
-      />
-
+    <section id="layanan" className="border-b border-border py-20 lg:py-28 relative overflow-hidden bg-bg">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 relative">
         {/* Section Header */}
         <motion.div
-          className="mb-12 text-center"
+          className="mb-14 text-left sm:text-center sm:mx-auto sm:max-w-2xl"
           variants={prefersReducedMotion ? undefined : fadeInUpVariants}
           initial={initial}
           whileInView="visible"
           viewport={VIEWPORT}
         >
-          <p
-            className="text-xs font-semibold uppercase tracking-wider"
-            style={{ color: "var(--color-accent-text)" }}
-          >
-            Layanan &amp; Fokus Solusi
-          </p>
-          <h2
-            className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl"
-            style={{ color: "var(--color-text-primary)", letterSpacing: "-0.025em" }}
-          >
-            Apa yang{" "}
-            <span
-              style={{
-                background: "linear-gradient(135deg, #60A5FA 0%, #C4B5FD 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
-            >
-              Saya Kerjakan
-            </span>
+          <div className="inline-flex items-center gap-2 mb-3">
+            <span className="font-serif-italic text-sm text-text-muted">03</span>
+            <span className="h-px w-6 bg-border" />
+            <p className="text-xs font-medium uppercase tracking-[0.2em] text-text-muted">
+              {labels.workflow.sectionLabel}
+            </p>
+          </div>
+          <h2 className="text-3xl font-medium tracking-tight sm:text-4xl text-text-primary">
+            {labels.workflow.title}{" "}
+            <span className="font-serif-italic font-normal">{labels.workflow.titleAccent}</span>
           </h2>
-          <p className="mt-2 text-sm max-w-xl mx-auto" style={{ color: "var(--color-text-secondary)" }}>
-            Tiga pilar utama solusi teknologi yang siap saya terapkan untuk membantu operasional tim dan kebutuhan digital perusahaan Anda.
+          <p className="mt-3 text-sm text-text-secondary leading-relaxed">
+            {labels.workflow.description}
           </p>
         </motion.div>
 
@@ -260,6 +161,7 @@ export function WorkflowSection() {
               step={item.step}
               title={item.title}
               description={item.description}
+              highlights={item.highlights}
               prefersReducedMotion={prefersReducedMotion}
             />
           ))}

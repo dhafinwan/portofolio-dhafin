@@ -1039,6 +1039,7 @@ export interface SculptureHeroProps {
   speed?: number
   intro?: boolean
 
+  showCredit?: boolean
   height?: string
   backdropText?: string
   className?: string
@@ -1048,9 +1049,9 @@ export interface SculptureHeroProps {
 const DEFAULTS = {
   src: "https://cdn.21st.dev/assets/mirror/a1/a1fa387b6e417b26a25f317559c87cce4d241c1052c52a2b3bc2966b2aaf9b65.webp",
   imageAlt: "Abstract metallic data visualization sculpture",
-  imageBackground: "#09090B",
+  imageBackground: "#111110",
   brand: "Dhafin Kurniawan",
-  eyebrow: "Data Analyst · Data Scientist · ML Engineer",
+  eyebrow: "Informatics Graduate · IT & Systems",
   headline: "Membangun Solusi Data\nPresisi & Terukur.",
   headlineAccent: "Presisi & Terukur.",
   body: "Lulusan S1 Informatika Universitas Gunadarma (IPK 3,80/4,00) • Certified Associate Data Scientist (BNSP).",
@@ -1058,9 +1059,13 @@ const DEFAULTS = {
   secondaryCta: { label: "Unduh CV", href: "#", download: true },
   hint: "Gerakkan kursor pada partikel",
   hintTouch: "Sentuh partikel",
-  background: "#09090B",
-  textColor: "#FAFAFA",
-  accentColor: "#2563EB",
+  background: "#111110",
+  textColor: "#F1EFEA",
+  accentColor: "#F1EFEA",
+  particleDensity: 0.5,
+  ambient: false,
+  intro: false,
+  showCredit: false,
 }
 
 function computeRect(
@@ -1095,7 +1100,7 @@ function computeRect(
 
 const CSS = `
 .sh-root{position:relative;width:100%;height:var(--sh-h);overflow:hidden;isolation:isolate;container-type:size;
-  background:var(--sh-bg);color:var(--sh-fg);font-family:'DM Sans', sans-serif;-webkit-font-smoothing:antialiased;
+  background:var(--sh-bg);color:var(--sh-fg);font-family:'Geist', -apple-system, BlinkMacSystemFont, sans-serif;-webkit-font-smoothing:antialiased;
   touch-action:pan-y;display:flex;flex-direction:column;box-sizing:border-box}
 .sh-root *,.sh-root *::before,.sh-root *::after{box-sizing:border-box}
 .sh-stage{position:absolute;inset:0;z-index:0;pointer-events:none}
@@ -1105,32 +1110,31 @@ const CSS = `
 .sh-root[data-gl="on"] .sh-fallback{opacity:0}
 .sh-root[data-swap="1"] .sh-canvas{opacity:0;transition-duration:.25s}
 .sh-root[data-swap="1"] .sh-fallback{opacity:0;transition-duration:.25s}
-.sh-backdrop{position:absolute;left:50%;z-index:0;transform:translate(-50%,-50%);white-space:nowrap;pointer-events:none;user-select:none;
-  font-family:'Space Grotesk', sans-serif;font-weight:700;letter-spacing:-.06em;line-height:.8;color:rgba(255,255,255,0.03)}
+.sh-backdrop{display:none}
 .sh-hint{position:absolute;z-index:1;transform:translate(-50%,0);display:flex;align-items:center;gap:8px;white-space:nowrap;
-  font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#71717A;pointer-events:none;transition:opacity .8s ease}
-.sh-hint::before{content:"";width:6px;height:6px;border-radius:50%;background:#2563EB;animation:sh-pulse 2.4s ease-in-out infinite}
+  font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:currentColor;opacity:.65;pointer-events:none;transition:opacity .8s ease}
+.sh-hint::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;animation:sh-pulse 2.4s ease-in-out infinite}
 .sh-root[data-touched="1"] .sh-hint{opacity:0}
 @keyframes sh-pulse{0%,100%{transform:scale(.6);opacity:.45}50%{transform:scale(1);opacity:1}}
 .sh-spacer{flex:1 1 auto;min-height:0}
 .sh-content{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);align-items:end;
   gap:clamp(24px,4cqw,72px);padding:0 clamp(20px,3.2cqw,48px) clamp(28px,3.4cqw,52px)}
-.sh-eyebrow{font-size:12px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:#A1A1AA;margin:0 0 clamp(14px,1.6cqw,20px);
+.sh-eyebrow{font-size:12px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:currentColor;opacity:.7;margin:0 0 clamp(14px,1.6cqw,20px);
   display:flex;align-items:center;gap:12px}
-.sh-eyebrow::before{content:"";width:24px;height:2px;background:#2563EB}
-.sh-h1{font-family:'Space Grotesk', sans-serif;font-weight:600;font-size:clamp(36px,min(6.2cqw,10cqh),96px);line-height:.96;letter-spacing:-.04em;margin:0;
-  text-wrap:balance;color:#FAFAFA}
+.sh-eyebrow::before{content:"";width:20px;height:1px;background:currentColor;opacity:.4}
+.sh-h1{font-family:'Geist', sans-serif;font-weight:600;font-size:clamp(36px,min(6.2cqw,10cqh),96px);line-height:.96;letter-spacing:-.04em;margin:0;
+  text-wrap:balance;color:var(--sh-fg)}
 .sh-h1 .sh-line{display:block}
-.sh-accent{color:#60A5FA}
+.sh-accent{font-family:'Instrument Serif', Georgia, serif;font-style:italic;font-weight:400;color:currentColor}
 .sh-aside{max-width:420px;justify-self:end;padding-bottom:.4em}
-.sh-body{font-size:clamp(14.5px,1.1cqw,16.5px);line-height:1.55;letter-spacing:-.01em;margin:0 0 24px;color:#A1A1AA;text-wrap:pretty}
-.sh-ctas{display:flex;flex-wrap:wrap;align-items:center;gap:16px}
-.sh-btn{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 22px;border-radius:8px;background:#2563EB;
-  color:#FFFFFF;text-decoration:none;font-size:14px;font-weight:500;letter-spacing:-.01em;transition:all .2s ease}
-.sh-btn:hover{background:#1D4ED8;transform:translateY(-1px)}
-.sh-txt{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 20px;border-radius:8px;border:1px solid #27272A;background:#111113;
-  color:#FAFAFA;text-decoration:none;font-size:14px;font-weight:500;letter-spacing:-.01em;transition:all .2s ease}
-.sh-txt:hover{border-color:#3F3F46;background:#18181B;transform:translateY(-1px)}
+.sh-body{font-size:clamp(14.5px,1.1cqw,16.5px);line-height:1.55;letter-spacing:-.01em;margin:0 0 24px;color:currentColor;opacity:.75;text-wrap:pretty}
+.sh-ctas{display:flex;flex-wrap:wrap;align-items:center;gap:14px}
+.sh-btn{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 24px;border-radius:9999px;background:var(--sh-fg);
+  color:var(--sh-bg);text-decoration:none;font-size:14px;font-weight:500;letter-spacing:-.01em;transition:all .2s ease}
+.sh-btn:hover{opacity:.9;transform:translateY(-1px)}
+.sh-txt{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 22px;border-radius:9999px;border:1px solid var(--sh-border, currentColor);background:transparent;
+  color:var(--sh-fg);text-decoration:none;font-size:14px;font-weight:500;letter-spacing:-.01em;transition:all .2s ease}
+.sh-txt:hover{background:var(--sh-surface, rgba(255,255,255,0.06));transform:translateY(-1px)}
 @container (max-width:1023px){
   .sh-content{grid-template-columns:1fr;gap:24px}
   .sh-aside{justify-self:start;max-width:540px;padding-bottom:0}
@@ -1205,7 +1209,7 @@ export default function SculptureHero(props: SculptureHeroProps) {
     interactive = true,
     strength = 1,
     radius = 220,
-    particleDensity = 1,
+    particleDensity = 0.5,
     particleSpread = 1,
     dotSize = 1,
     turbulence = 1,
@@ -1217,8 +1221,9 @@ export default function SculptureHero(props: SculptureHeroProps) {
     ambientIntensity = 1,
     speed = 1,
     intro = false,
+    showCredit = false,
     height = "100svh",
-    backdropText = "DHAFIN",
+    backdropText = "",
     className,
     style,
   } = props
@@ -1508,6 +1513,25 @@ export default function SculptureHero(props: SculptureHeroProps) {
           </div>
         </div>
       </div>
+
+      {showCredit ? (
+        <div
+          className="sh-credit"
+          style={{
+            position: "absolute",
+            bottom: 12,
+            right: 16,
+            fontSize: 10,
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            opacity: 0.35,
+            pointerEvents: "none",
+            zIndex: 10,
+          }}
+        >
+          Forma Studio
+        </div>
+      ) : null}
     </section>
   )
 }

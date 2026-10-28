@@ -1,28 +1,19 @@
 import { motion, AnimatePresence } from "motion/react";
 import { useState, useEffect } from "react";
-import { portfolioData } from "@/data/content";
-import { List, X } from "@phosphor-icons/react";
-import {
-  usePrefersReducedMotion,
-  buttonHoverVariants,
-} from "@/lib/motion";
+import { usePortfolioContent } from "@/data/content";
+import { useApp } from "@/context/AppContext";
+import { List, X, Sun, Moon } from "@phosphor-icons/react";
+import { usePrefersReducedMotion } from "@/lib/motion";
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("beranda");
   const prefersReducedMotion = usePrefersReducedMotion();
-  const { profile } = portfolioData;
-
-  const navLinks = [
-    { label: "Beranda", href: "#beranda", id: "beranda" },
-    { label: "Sorotan", href: "#sorotan", id: "sorotan" },
-    { label: "Tentang", href: "#tentang", id: "tentang" },
-    { label: "Proyek", href: "#proyek", id: "proyek" },
-    { label: "Keahlian", href: "#keahlian", id: "keahlian" },
-    { label: "Riwayat", href: "#riwayat", id: "riwayat" },
-    { label: "Sertifikasi", href: "#sertifikasi", id: "sertifikasi" },
-  ];
+  const { lang, toggleLang, theme, toggleTheme } = useApp();
+  const content = usePortfolioContent();
+  const { profile, labels } = content;
+  const navLinks = labels.nav.links;
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 12);
@@ -47,37 +38,29 @@ export function Navbar() {
       observers.push(obs);
     });
     return () => observers.forEach((o) => o.disconnect());
-  }, []);
+  }, [navLinks]);
 
   return (
     <header
       className={`sticky top-0 z-50 w-full transition-all duration-300 ${
         scrolled
-          ? "border-b border-white/[0.04] bg-bg/80 backdrop-blur-xl shadow-lg shadow-black/40"
+          ? "border-b border-border bg-bg/90 backdrop-blur-md shadow-sm"
           : "border-b border-transparent bg-transparent"
       }`}
     >
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Brand — gradient monogram */}
+        {/* Brand Monogram */}
         <a
           href="#beranda"
-          className="group relative flex items-center gap-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md"
-          aria-label={`${profile.name} — beranda`}
+          className="group relative flex items-center gap-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg rounded-md"
+          aria-label={`${profile.name} — ${labels.nav.links[0]?.label || "Home"}`}
         >
-          {/* Glow dot */}
-          <span
-            className="relative flex h-7 w-7 items-center justify-center rounded-lg"
-            style={{
-              background: "linear-gradient(135deg, #2563EB 0%, #60A5FA 100%)",
-              boxShadow: "0 0 14px rgba(37,99,235,0.5)",
-            }}
-          >
-            <span className="text-xs font-bold text-white leading-none">DK</span>
+          <span className="relative flex h-7 w-7 items-center justify-center rounded-full bg-fg text-bg transition-transform duration-200 group-hover:scale-105">
+            <span className="text-[11px] font-mono font-bold leading-none tracking-tighter">
+              DK
+            </span>
           </span>
-          <span
-            className="text-sm font-bold tracking-tight text-text-primary transition-colors group-hover:text-accent-text"
-            style={{ fontFamily: "var(--font-heading)" }}
-          >
+          <span className="text-sm font-semibold tracking-tight text-text-primary transition-opacity group-hover:opacity-80">
             {profile.name}
           </span>
         </a>
@@ -90,20 +73,20 @@ export function Navbar() {
               <a
                 key={link.href}
                 href={link.href}
-                className="relative px-3 py-1.5 text-sm font-medium rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                className="relative px-3 py-1.5 text-xs font-medium rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg"
                 style={{
                   color: isActive
-                    ? "var(--color-text-primary)"
-                    : "var(--color-text-secondary)",
+                    ? "var(--sh-fg)"
+                    : "var(--sh-text-secondary)",
                 }}
               >
                 {isActive && !prefersReducedMotion && (
                   <motion.span
                     layoutId="nav-active-pill"
-                    className="absolute inset-0 rounded-md"
+                    className="absolute inset-0 rounded-full"
                     style={{
-                      backgroundColor: "var(--color-surface-2)",
-                      border: "1px solid var(--color-border)",
+                      backgroundColor: "var(--sh-surface-2)",
+                      border: "1px solid var(--sh-border)",
                     }}
                     transition={{ type: "spring", stiffness: 400, damping: 35 }}
                   />
@@ -113,33 +96,85 @@ export function Navbar() {
             );
           })}
 
-          {/* CTA Button */}
-          <motion.a
-            href={`mailto:${profile.contact.email}`}
-            variants={prefersReducedMotion ? undefined : buttonHoverVariants}
-            initial="rest"
-            whileHover="hover"
-            whileTap="tap"
-            className="ml-2 inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
-            style={{
-              background: "linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)",
-              boxShadow: "0 0 18px rgba(37,99,235,0.3), inset 0 1px 0 rgba(255,255,255,0.1)",
-            }}
+          <div className="mx-2 h-4 w-px bg-border" />
+
+          {/* Language Toggle */}
+          <button
+            type="button"
+            onClick={toggleLang}
+            className="flex items-center gap-1 rounded-full border border-border px-2.5 py-1 text-[11px] font-mono font-medium text-text-secondary hover:text-text-primary hover:border-text-secondary transition-colors"
+            title={lang === "id" ? "Switch to English" : "Ganti ke Bahasa Indonesia"}
+            aria-label="Toggle language"
           >
-            Hubungi saya
-          </motion.a>
+            <span className={lang === "id" ? "font-bold text-text-primary" : "opacity-60"}>
+              ID
+            </span>
+            <span className="opacity-30">/</span>
+            <span className={lang === "en" ? "font-bold text-text-primary" : "opacity-60"}>
+              EN
+            </span>
+          </button>
+
+          {/* Theme Toggle */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-text-secondary hover:text-text-primary hover:border-text-secondary transition-colors"
+            title={theme === "dark" ? "Ganti ke Light Mode" : "Ganti ke Dark Mode"}
+            aria-label="Toggle theme"
+          >
+            {theme === "dark" ? (
+              <Sun size={15} weight="regular" />
+            ) : (
+              <Moon size={15} weight="regular" />
+            )}
+          </button>
+
+          {/* High-contrast Monochrome Pill CTA Button */}
+          <a
+            href={`mailto:${profile.contact.email}`}
+            className="btn-pill-primary ml-1 text-xs"
+          >
+            {labels.nav.cta}
+          </a>
         </nav>
 
-        {/* Mobile Menu Toggle */}
-        <div className="flex md:hidden">
+        {/* Mobile Menu & Controls */}
+        <div className="flex items-center gap-2 md:hidden">
+          {/* Mobile Language Toggle */}
+          <button
+            type="button"
+            onClick={toggleLang}
+            className="flex items-center gap-1 rounded-full border border-border px-2 py-1 text-[11px] font-mono font-medium text-text-secondary hover:text-text-primary transition-colors"
+            aria-label="Toggle language"
+          >
+            <span className={lang === "id" ? "font-bold text-text-primary" : "opacity-60"}>
+              ID
+            </span>
+            <span className="opacity-30">/</span>
+            <span className={lang === "en" ? "font-bold text-text-primary" : "opacity-60"}>
+              EN
+            </span>
+          </button>
+
+          {/* Mobile Theme Toggle */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-border text-text-secondary hover:text-text-primary transition-colors"
+            aria-label="Toggle theme"
+          >
+            {theme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
+          </button>
+
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md p-2 text-text-secondary hover:bg-surface-2 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="inline-flex min-h-[40px] min-w-[40px] items-center justify-center rounded-full border border-border p-2 text-text-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg"
             aria-expanded={mobileMenuOpen}
             aria-label={mobileMenuOpen ? "Tutup menu navigasi" : "Buka menu navigasi"}
           >
-            {mobileMenuOpen ? <X size={24} /> : <List size={24} />}
+            {mobileMenuOpen ? <X size={20} /> : <List size={20} />}
           </button>
         </div>
       </div>
@@ -149,10 +184,10 @@ export function Navbar() {
         {mobileMenuOpen && (
           <motion.div
             key="mobile-menu"
-            initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: -8 }}
+            initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: -8 }}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
+            exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: -6 }}
+            transition={{ duration: 0.18, ease: "easeInOut" }}
             className="border-b border-border bg-bg/95 backdrop-blur-xl px-4 py-4 md:hidden"
           >
             <nav className="flex flex-col gap-1" aria-label="Navigasi Seluler">
@@ -163,18 +198,12 @@ export function Navbar() {
                     key={link.href}
                     href={link.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex min-h-[44px] items-center rounded-md px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                    className="flex min-h-[40px] items-center rounded-xl px-3.5 py-2 text-sm font-medium transition-colors"
                     style={{
-                      color: isActive ? "var(--color-text-primary)" : "var(--color-text-secondary)",
-                      backgroundColor: isActive ? "var(--color-surface-2)" : "transparent",
+                      color: isActive ? "var(--sh-fg)" : "var(--sh-text-secondary)",
+                      backgroundColor: isActive ? "var(--sh-surface-2)" : "transparent",
                     }}
                   >
-                    {isActive && (
-                      <span
-                        className="mr-2 h-1.5 w-1.5 rounded-full flex-shrink-0"
-                        style={{ backgroundColor: "var(--color-accent)" }}
-                      />
-                    )}
                     {link.label}
                   </a>
                 );
@@ -182,13 +211,9 @@ export function Navbar() {
               <a
                 href={`mailto:${profile.contact.email}`}
                 onClick={() => setMobileMenuOpen(false)}
-                className="mt-3 inline-flex min-h-[44px] items-center justify-center rounded-lg px-4 py-2.5 text-sm font-semibold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                style={{
-                  background: "linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)",
-                  boxShadow: "0 0 18px rgba(37,99,235,0.3)",
-                }}
+                className="btn-pill-primary mt-3 text-center"
               >
-                Hubungi saya
+                {labels.nav.cta}
               </a>
             </nav>
           </motion.div>
