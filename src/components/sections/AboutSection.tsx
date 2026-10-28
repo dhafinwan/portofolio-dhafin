@@ -53,8 +53,8 @@ export function AboutSection() {
     {
       icon: <Code size={18} aria-hidden="true" />,
       label: "Fokus Keahlian",
-      value: "Data Science · NLP · Machine Learning",
-      badge: "Core Focus",
+      value: "Data & Reporting · Web & Otomasi · IT Support",
+      badge: "Serbabisa",
       accent: false,
     },
   ];
@@ -83,7 +83,7 @@ export function AboutSection() {
               className="text-xs font-semibold uppercase tracking-wider"
               style={{ color: "var(--color-accent-text)" }}
             >
-              Latar Belakang &amp; Persona
+              Latar Belakang &amp; Profil
             </p>
             <h2
               className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl"
@@ -102,7 +102,7 @@ export function AboutSection() {
               </span>
             </h2>
             <p className="mt-2 text-sm max-w-2xl" style={{ color: "var(--color-text-secondary)" }}>
-              Kombinasi analisis data berbasis bukti, kecerdasan buatan terapan, dan disiplin pemecahan masalah teknis.
+              Lulusan IT yang serbabisa, adaptif terhadap teknologi baru, dan berfokus menghadirkan solusi praktis yang bermanfaat.
             </p>
           </motion.div>
 
@@ -170,9 +170,9 @@ export function AboutSection() {
                     className="text-base sm:text-lg font-medium leading-relaxed"
                     style={{ color: "var(--color-text-primary)", letterSpacing: "-0.01em" }}
                   >
-                    Lulusan S1 Informatika Universitas Gunadarma dengan minat mendalam pada{" "}
+                    Lulusan S1 Informatika yang fleksibel dan siap berkontribusi pada{" "}
                     <span style={{ color: "var(--color-accent-text)" }}>
-                      eksplorasi data, machine learning, dan NLP
+                      kebutuhan IT umum, olah data &amp; pelaporan, pembuatan web &amp; skrip otomasi, hingga operasional sistem
                     </span>
                     .
                   </p>

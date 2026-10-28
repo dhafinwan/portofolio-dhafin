@@ -7,37 +7,37 @@ import {
   viewportContainerVariants,
   VIEWPORT,
 } from "@/lib/motion";
-import { Brain, Database, Wrench, Globe } from "@phosphor-icons/react";
+import { ChartBar, Code, Database, Globe, Wrench } from "@phosphor-icons/react";
 
 // Category icon map using phosphor icons
 const categoryIconComponent: Record<string, React.ReactNode> = {
-  "Data & Machine Learning": <Brain size={20} weight="duotone" />,
-  "Bahasa & Database": <Database size={20} weight="duotone" />,
-  "Library & Tools": <Wrench size={20} weight="duotone" />,
-  "Jaringan & IT Operations": <Globe size={20} weight="duotone" />,
+  "Data & Reporting": <ChartBar size={20} weight="duotone" />,
+  "Web & Pemrograman": <Code size={20} weight="duotone" />,
+  "Database & Sistem": <Database size={20} weight="duotone" />,
+  "IT Support & Jaringan": <Globe size={20} weight="duotone" />,
 };
 
 // Category accent color map
 const categoryAccentMap: Record<string, { bg: string; fg: string; border: string; glow: string }> = {
-  "Data & Machine Learning": {
+  "Data & Reporting": {
     bg: "rgba(37,99,235,0.12)",
     fg: "#60A5FA",
     border: "rgba(37,99,235,0.35)",
     glow: "rgba(37,99,235,0.14)",
   },
-  "Bahasa & Database": {
+  "Web & Pemrograman": {
     bg: "rgba(139,92,246,0.12)",
     fg: "#C4B5FD",
     border: "rgba(139,92,246,0.35)",
     glow: "rgba(139,92,246,0.12)",
   },
-  "Library & Tools": {
+  "Database & Sistem": {
     bg: "rgba(20,184,166,0.12)",
     fg: "#5EEAD4",
     border: "rgba(20,184,166,0.35)",
     glow: "rgba(20,184,166,0.12)",
   },
-  "Jaringan & IT Operations": {
+  "IT Support & Jaringan": {
     bg: "rgba(34,197,94,0.12)",
     fg: "#86EFAC",
     border: "rgba(34,197,94,0.35)",
@@ -194,7 +194,7 @@ export function SkillsSection() {
             className="text-xs font-semibold uppercase tracking-wider"
             style={{ color: "var(--color-accent-text)" }}
           >
-            Perangkat &amp; Kompetensi
+            Keahlian &amp; Perangkat
           </p>
           <h2
             className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl"
@@ -209,11 +209,11 @@ export function SkillsSection() {
                 backgroundClip: "text",
               }}
             >
-              Teknis Teruji
+              Teknis &amp; Tools
             </span>
           </h2>
           <p className="mt-2 text-sm max-w-2xl" style={{ color: "var(--color-text-secondary)" }}>
-            Kumpulan instrumen pemrograman, pustaka machine learning &amp; NLP, sistem basis data, serta operasional jaringan yang siap diterapkan langsung pada pekerjaan.
+            Kombinasi kemampuan praktis dalam pengelolaan data, pembuatan aplikasi web &amp; skrip otomasi, administrasi basis data, serta operasional jaringan yang siap diterapkan.
           </p>
         </motion.div>
 

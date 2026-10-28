@@ -1,7 +1,15 @@
 import { useState, useRef } from "react";
 import { motion } from "motion/react";
 import { portfolioData } from "@/data/content";
-import { EnvelopeSimple, DownloadSimple, GithubLogo, LinkedinLogo, ArrowUpRight } from "@phosphor-icons/react";
+import {
+  EnvelopeSimple,
+  DownloadSimple,
+  GithubLogo,
+  LinkedinLogo,
+  InstagramLogo,
+  TiktokLogo,
+  ArrowUpRight,
+} from "@phosphor-icons/react";
 import {
   usePrefersReducedMotion,
   fadeInUpVariants,
@@ -104,11 +112,11 @@ export function ContactFooterSection() {
                 className="mt-3 text-sm sm:text-base leading-relaxed"
                 style={{ color: "var(--color-text-secondary)" }}
               >
-                Saya terbuka untuk posisi entry-level sebagai{" "}
+                Saya terbuka untuk posisi di bidang{" "}
                 <strong style={{ color: "var(--color-text-primary)" }}>
-                  Data Analyst, Data Scientist, atau Machine Learning Engineer
+                  IT Umum, Data &amp; Reporting, Web Development, maupun IT Support / Sistem Operasional
                 </strong>
-                . Mari terhubung dan diskusikan bagaimana kemampuan analisis saya dapat berkontribusi pada tim Anda.
+                . Mari terhubung dan diskusikan bagaimana kemampuan teknis saya dapat mendukung kebutuhan tim Anda.
               </p>
             </div>
 
@@ -166,7 +174,7 @@ export function ContactFooterSection() {
             </p>
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="flex flex-wrap items-center justify-center gap-5 sm:gap-6">
             <motion.a
               href={profile.contact.github}
               target="_blank"
@@ -193,6 +201,34 @@ export function ContactFooterSection() {
             >
               <LinkedinLogo size={18} aria-hidden="true" />
               <span>LinkedIn</span>
+            </motion.a>
+
+            <motion.a
+              href={profile.contact.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Profil Instagram @dhafinwan"
+              whileHover={prefersReducedMotion ? undefined : { scale: 1.15, color: "#F472B6" }}
+              whileTap={prefersReducedMotion ? undefined : { scale: 0.95 }}
+              className="flex items-center gap-1.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded p-1"
+              style={{ color: "var(--color-text-secondary)", textDecoration: "none" }}
+            >
+              <InstagramLogo size={18} aria-hidden="true" />
+              <span>Instagram</span>
+            </motion.a>
+
+            <motion.a
+              href={profile.contact.tiktok}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Profil TikTok @finn.code"
+              whileHover={prefersReducedMotion ? undefined : { scale: 1.15, color: "#2DD4BF" }}
+              whileTap={prefersReducedMotion ? undefined : { scale: 0.95 }}
+              className="flex items-center gap-1.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded p-1"
+              style={{ color: "var(--color-text-secondary)", textDecoration: "none" }}
+            >
+              <TiktokLogo size={18} aria-hidden="true" />
+              <span>TikTok</span>
             </motion.a>
 
             <motion.a

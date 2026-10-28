@@ -7,23 +7,66 @@ import {
   viewportContainerVariants,
   VIEWPORT,
 } from "@/lib/motion";
-import { Database, Broom, Cpu, RocketLaunch } from "@phosphor-icons/react";
+import {
+  ChartBar,
+  Code,
+  Wrench,
+  CheckCircle,
+} from "@phosphor-icons/react";
 
-const workflowIcons = [
-  <Database size={22} weight="duotone" aria-hidden="true" />,
-  <Broom size={22} weight="duotone" aria-hidden="true" />,
-  <Cpu size={22} weight="duotone" aria-hidden="true" />,
-  <RocketLaunch size={22} weight="duotone" aria-hidden="true" />,
-];
+const serviceMeta: Record<
+  number,
+  {
+    icon: React.ReactNode;
+    accent: { bg: string; border: string; fg: string; glow: string };
+    highlights: string[];
+  }
+> = {
+  1: {
+    icon: <ChartBar size={24} weight="duotone" aria-hidden="true" />,
+    accent: {
+      bg: "rgba(59,130,246,0.12)",
+      border: "rgba(59,130,246,0.35)",
+      fg: "#60A5FA",
+      glow: "rgba(59,130,246,0.12)",
+    },
+    highlights: [
+      "Pengumpulan & pembersihan dataset kotor",
+      "Penyusunan laporan berkala & visualisasi ringkas",
+      "Dashboard analitik interaktif & eksplorasi wawasan",
+    ],
+  },
+  2: {
+    icon: <Code size={24} weight="duotone" aria-hidden="true" />,
+    accent: {
+      bg: "rgba(139,92,246,0.12)",
+      border: "rgba(139,92,246,0.35)",
+      fg: "#C4B5FD",
+      glow: "rgba(139,92,246,0.12)",
+    },
+    highlights: [
+      "Pengembangan aplikasi web yang responsif & praktis",
+      "Skrip otomasi Python untuk tugas rutin berulang",
+      "Integrasi API & alur pemrosesan data otomatis",
+    ],
+  },
+  3: {
+    icon: <Wrench size={24} weight="duotone" aria-hidden="true" />,
+    accent: {
+      bg: "rgba(34,197,94,0.12)",
+      border: "rgba(34,197,94,0.35)",
+      fg: "#86EFAC",
+      glow: "rgba(34,197,94,0.12)",
+    },
+    highlights: [
+      "Troubleshooting perangkat keras & sistem operasi",
+      "Konfigurasi dan pengawasan stabilitas jaringan LAN",
+      "Pendampingan operasional teknis & live streaming",
+    ],
+  },
+};
 
-const workflowAccents = [
-  { bg: "rgba(251,191,36,0.12)", border: "rgba(251,191,36,0.3)", fg: "#FCD34D", glow: "rgba(251,191,36,0.1)" },
-  { bg: "rgba(59,130,246,0.12)", border: "rgba(59,130,246,0.3)", fg: "#93C5FD", glow: "rgba(59,130,246,0.1)" },
-  { bg: "rgba(139,92,246,0.12)", border: "rgba(139,92,246,0.3)", fg: "#C4B5FD", glow: "rgba(139,92,246,0.1)" },
-  { bg: "rgba(34,197,94,0.12)", border: "rgba(34,197,94,0.3)", fg: "#86EFAC", glow: "rgba(34,197,94,0.1)" },
-];
-
-function WorkflowCard({
+function ServiceCard({
   step,
   title,
   description,
@@ -36,8 +79,7 @@ function WorkflowCard({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState(false);
-  const accent = workflowAccents[(step - 1) % workflowAccents.length];
-  const icon = workflowIcons[(step - 1) % workflowIcons.length];
+  const meta = serviceMeta[step] || serviceMeta[1];
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!ref.current || prefersReducedMotion) return;
@@ -58,14 +100,14 @@ function WorkflowCard({
         onMouseMove={handleMouseMove}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className="relative flex flex-col justify-between rounded-2xl overflow-hidden p-6 h-full"
+        className="relative flex flex-col justify-between rounded-2xl overflow-hidden p-6 sm:p-7 h-full"
         style={{
           backgroundColor: "var(--color-surface)",
-          border: `1px solid ${hovered && !prefersReducedMotion ? accent.border : "var(--color-border)"}`,
+          border: `1px solid ${hovered && !prefersReducedMotion ? meta.accent.border : "var(--color-border)"}`,
           transition: "border-color 0.25s ease, box-shadow 0.25s ease",
           boxShadow:
             hovered && !prefersReducedMotion
-              ? `0 12px 32px rgba(0,0,0,0.45), 0 0 0 1px ${accent.border}`
+              ? `0 14px 36px rgba(0,0,0,0.45), 0 0 0 1px ${meta.accent.border}`
               : "none",
         }}
       >
@@ -76,52 +118,72 @@ function WorkflowCard({
             style={{
               opacity: hovered ? 1 : 0,
               transition: "opacity 0.25s ease",
-              background: `radial-gradient(300px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), ${accent.glow}, transparent 70%)`,
+              background: `radial-gradient(320px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), ${meta.accent.glow}, transparent 70%)`,
             }}
           />
         )}
 
-        {/* Step icon + number */}
-        <div className="relative flex items-start justify-between mb-5">
-          <div
-            className="flex h-11 w-11 items-center justify-center rounded-xl"
-            style={{
-              backgroundColor: accent.bg,
-              border: `1px solid ${accent.border}`,
-              color: accent.fg,
-            }}
-          >
-            {icon}
+        {/* Card Header: Icon & Step Number */}
+        <div>
+          <div className="relative flex items-center justify-between mb-5">
+            <div
+              className="flex h-12 w-12 items-center justify-center rounded-xl"
+              style={{
+                backgroundColor: meta.accent.bg,
+                border: `1px solid ${meta.accent.border}`,
+                color: meta.accent.fg,
+              }}
+            >
+              {meta.icon}
+            </div>
+            <span
+              className="font-mono text-3xl font-extrabold tabular-nums"
+              style={{ color: "var(--color-border-hover)", lineHeight: 1 }}
+            >
+              {String(step).padStart(2, "0")}
+            </span>
           </div>
-          <span
-            className="font-mono text-3xl font-extrabold tabular-nums"
-            style={{ color: "var(--color-border-hover)", lineHeight: 1 }}
-          >
-            {String(step).padStart(2, "0")}
-          </span>
+
+          {/* Title & Description */}
+          <div className="relative">
+            <h3
+              className="text-lg font-bold mb-2.5 leading-snug"
+              style={{
+                color: "var(--color-text-primary)",
+                fontFamily: "var(--font-heading)",
+              }}
+            >
+              {title}
+            </h3>
+            <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>
+              {description}
+            </p>
+          </div>
         </div>
 
-        {/* Content */}
-        <div className="relative">
-          <h3
-            className="text-base font-bold mb-2 leading-snug"
-            style={{
-              color: "var(--color-text-primary)",
-              fontFamily: "var(--font-heading)",
-            }}
-          >
-            {title}
-          </h3>
-          <p className="text-xs leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>
-            {description}
-          </p>
+        {/* Capabilities Bullet Points */}
+        <div
+          className="relative mt-6 pt-5 space-y-2.5"
+          style={{ borderTop: "1px solid var(--color-border)" }}
+        >
+          {meta.highlights.map((point, idx) => (
+            <div key={idx} className="flex items-start gap-2.5 text-xs leading-relaxed">
+              <CheckCircle
+                size={16}
+                weight="fill"
+                className="mt-0.5 shrink-0"
+                style={{ color: meta.accent.fg }}
+              />
+              <span style={{ color: "var(--color-text-secondary)" }}>{point}</span>
+            </div>
+          ))}
         </div>
 
         {/* Bottom accent gradient bar on hover */}
         <div
           className="absolute bottom-0 left-0 right-0 h-0.5 rounded-b-2xl"
           style={{
-            background: `linear-gradient(90deg, ${accent.fg}, transparent)`,
+            background: `linear-gradient(90deg, ${meta.accent.fg}, transparent)`,
             opacity: hovered ? 1 : 0,
             transition: "opacity 0.25s ease",
           }}
@@ -138,7 +200,7 @@ export function WorkflowSection() {
   const initial = prefersReducedMotion ? "visible" : "hidden";
 
   return (
-    <section id="cara-kerja" className="border-b border-border py-16 lg:py-24 relative overflow-hidden">
+    <section id="layanan" className="border-b border-border py-16 lg:py-24 relative overflow-hidden">
       {/* Background glow */}
       <div
         className="pointer-events-none absolute inset-0"
@@ -161,39 +223,39 @@ export function WorkflowSection() {
             className="text-xs font-semibold uppercase tracking-wider"
             style={{ color: "var(--color-accent-text)" }}
           >
-            Metodologi Kerja &amp; Eksekusi
+            Layanan &amp; Fokus Solusi
           </p>
           <h2
             className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl"
             style={{ color: "var(--color-text-primary)", letterSpacing: "-0.025em" }}
           >
-            Siklus Proyek Data{" "}
+            Apa yang{" "}
             <span
               style={{
-                background: "linear-gradient(135deg, #FCD34D 0%, #60A5FA 100%)",
+                background: "linear-gradient(135deg, #60A5FA 0%, #C4B5FD 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
               }}
             >
-              CRISP-DM
+              Saya Kerjakan
             </span>
           </h2>
           <p className="mt-2 text-sm max-w-xl mx-auto" style={{ color: "var(--color-text-secondary)" }}>
-            Disiplin 4 langkah terstruktur untuk mengubah data mentah menjadi wawasan bisnis dan sistem prediksi yang dapat dioperasikan.
+            Tiga pilar utama solusi teknologi yang siap saya terapkan untuk membantu operasional tim dan kebutuhan digital perusahaan Anda.
           </p>
         </motion.div>
 
-        {/* Workflow Cards */}
+        {/* 3 Main Service Cards */}
         <motion.div
-          className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
+          className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
           variants={containerVariants}
           initial={initial}
           whileInView="visible"
           viewport={VIEWPORT}
         >
           {workflow.map((item) => (
-            <WorkflowCard
+            <ServiceCard
               key={item.step}
               step={item.step}
               title={item.title}

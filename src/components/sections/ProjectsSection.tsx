@@ -133,13 +133,13 @@ export function ProjectsSection() {
             className="text-xs font-semibold uppercase tracking-wider"
             style={{ color: "var(--color-accent-text)" }}
           >
-            Studi Kasus &amp; Implementasi End-to-End
+            Portofolio &amp; Solusi Praktis
           </p>
           <h2
             className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl"
             style={{ color: "var(--color-text-primary)", letterSpacing: "-0.025em" }}
           >
-            Proyek Data &amp;{" "}
+            Proyek IT, Web &amp;{" "}
             <span
               style={{
                 background: "linear-gradient(135deg, #60A5FA 0%, #C4B5FD 100%)",
@@ -148,11 +148,11 @@ export function ProjectsSection() {
                 backgroundClip: "text",
               }}
             >
-              Machine Learning
+              Olah Data
             </span>
           </h2>
           <p className="mt-2 text-sm max-w-2xl" style={{ color: "var(--color-text-secondary)" }}>
-            Implementasi nyata mulai dari klasifikasi teks IndoBERT, regresi prediktif harga mobil bekas, deteksi risiko diabetes, hingga analisis sentimen opini publik.
+            Rangkuman implementasi nyata mulai dari aplikasi web pengelompok teks otomatis, estimasi harga berbasis data, dashboard skrining kesehatan, hingga otomasi analisis opini publik.
           </p>
         </motion.div>
 
@@ -271,7 +271,7 @@ export function ProjectsSection() {
             className="text-base font-bold uppercase tracking-wider text-xs"
             style={{ color: "var(--color-text-muted)" }}
           >
-            Proyek Data &amp; Analitik Terpilih
+            Proyek &amp; Eksplorasi Lainnya
           </h3>
           <div className="h-px flex-1" style={{ background: "var(--color-border)" }} />
         </div>
