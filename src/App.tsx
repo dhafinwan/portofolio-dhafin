@@ -28,8 +28,8 @@ export function App() {
         <HeroSection />
         <HighlightsSection />
         <AboutSection />
-        <ProjectsSection />
         <WorkflowSection />
+        <ProjectsSection />
         <SkillsSection />
         <TimelineSection />
         <CredentialsSection />

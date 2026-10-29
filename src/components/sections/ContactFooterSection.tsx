@@ -33,7 +33,7 @@ export function ContactFooterSection() {
   const initial = prefersReducedMotion ? "visible" : "hidden";
 
   return (
-    <footer id="kontak" className="border-t border-border bg-bg pt-20 pb-16 relative overflow-hidden">
+    <footer id="kontak" className="border-t border-border bg-bg pt-16 pb-14 relative overflow-hidden">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 relative">
         {/* Contact Banner / Callout Card */}
         <motion.div
@@ -90,7 +90,8 @@ export function ContactFooterSection() {
 
               <a
                 href={profile.cvFilePath}
-                download
+                target="_blank"
+                rel="noopener noreferrer"
                 className="btn-pill-secondary inline-flex h-12 items-center justify-center gap-2 px-6 text-xs font-medium"
               >
                 <DownloadSimple size={16} aria-hidden="true" />

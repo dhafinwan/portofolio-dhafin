@@ -27,12 +27,11 @@ function MetricCard({
       className="h-full"
     >
       <div className="relative flex flex-col justify-between rounded-2xl p-6 sm:p-7 h-full bg-surface border border-border hover:border-text-secondary/40 transition-colors">
-        {/* Editorial Index Number */}
+        {/* Index Number */}
         <div className="flex items-center justify-between mb-6">
           <span className="font-serif-italic text-2xl text-text-muted opacity-80">
             {String(index + 1).padStart(2, "0")}
           </span>
-          <span className="h-px w-6 bg-border" />
         </div>
 
         {/* Big Metric Value & Label */}
@@ -61,11 +60,11 @@ export function HighlightsSection() {
   const containerVariants = prefersReducedMotion ? undefined : viewportContainerVariants;
 
   return (
-    <section id="sorotan" className="border-b border-border py-20 lg:py-28 relative bg-bg">
+    <section id="sorotan" className="border-b border-border py-16 lg:py-24 relative bg-bg">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 relative">
         {/* Section Header */}
         <motion.div
-          className="mb-14 text-left"
+          className="mb-12 text-left"
           variants={prefersReducedMotion ? undefined : fadeInUpVariants}
           initial={prefersReducedMotion ? "visible" : "hidden"}
           whileInView="visible"
@@ -73,7 +72,7 @@ export function HighlightsSection() {
         >
           <div className="flex items-center gap-2 mb-3">
             <span className="font-serif-italic text-sm text-text-muted">01</span>
-            <span className="h-px w-6 bg-border" />
+            <span className="text-text-muted text-xs">•</span>
             <p className="text-xs font-medium uppercase tracking-[0.2em] text-text-muted">
               {labels.highlights.sectionLabel}
             </p>

@@ -78,12 +78,12 @@ export function ProjectsSection() {
   return (
     <section
       id="proyek"
-      className="border-b border-border py-20 lg:py-28 relative overflow-hidden bg-bg"
+      className="border-b border-border py-16 lg:py-24 relative overflow-hidden bg-bg"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 relative">
         {/* Section Header */}
         <motion.div
-          className="mb-14 text-left"
+          className="mb-12 text-left"
           variants={prefersReducedMotion ? undefined : fadeInUpVariants}
           initial={initial}
           whileInView="visible"
@@ -91,7 +91,7 @@ export function ProjectsSection() {
         >
           <div className="flex items-center gap-2 mb-3">
             <span className="font-serif-italic text-sm text-text-muted">04</span>
-            <span className="h-px w-6 bg-border" />
+            <span className="text-text-muted text-xs">•</span>
             <p className="text-xs font-medium uppercase tracking-[0.2em] text-text-muted">
               {labels.projects.sectionLabel}
             </p>
@@ -113,13 +113,13 @@ export function ProjectsSection() {
             whileInView="visible"
             viewport={VIEWPORT}
             whileHover={prefersReducedMotion ? undefined : { y: -2, transition: { duration: 0.2 } }}
-            className="mb-12"
+            className="mb-10"
           >
             <SpotlightCard
               prefersReducedMotion={prefersReducedMotion}
               className="rounded-2xl"
             >
-              <div className="p-7 sm:p-9 lg:p-11">
+              <div className="p-7 sm:p-9 lg:p-10">
                 <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
                   <div className="flex items-center gap-2">
                     <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium bg-surface-2 border border-border text-text-primary">
@@ -145,7 +145,7 @@ export function ProjectsSection() {
                   ))}
                 </div>
 
-                <ul className="mt-8 space-y-3 pt-6 border-t border-border">
+                <ul className="mt-7 space-y-3 pt-6 border-t border-border">
                   {featuredProject.points.map((point, idx) => (
                     <li key={idx} className="flex items-start gap-3 text-sm leading-relaxed text-text-secondary">
                       <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-surface-2 border border-border text-text-primary">
@@ -157,7 +157,7 @@ export function ProjectsSection() {
                 </ul>
 
                 {featuredProject.href && (
-                  <div className="mt-8 pt-6 border-t border-border">
+                  <div className="mt-7 pt-5 border-t border-border">
                     <a
                       href={featuredProject.href}
                       target="_blank"
@@ -179,7 +179,6 @@ export function ProjectsSection() {
           <h3 className="text-xs font-medium uppercase tracking-[0.2em] text-text-muted">
             {labels.projects.otherProjectsHeader}
           </h3>
-          <div className="h-px flex-1 bg-border" />
         </div>
 
         {/* Other Projects Grid with Stagger */}
@@ -199,7 +198,7 @@ export function ProjectsSection() {
             >
               <SpotlightCard
                 prefersReducedMotion={prefersReducedMotion}
-                className="flex h-full flex-col justify-between rounded-xl p-6 sm:p-7"
+                className="flex h-full flex-col justify-between rounded-2xl p-6 sm:p-7"
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-4">

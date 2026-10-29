@@ -66,10 +66,16 @@ function CertificateModal({
   modalState,
   onClose,
   closeLabel,
+  openLabel,
+  downloadLabel,
+  escHint,
 }: {
   modalState: PreviewModalState;
   onClose: () => void;
   closeLabel: string;
+  openLabel: string;
+  downloadLabel: string;
+  escHint: string;
 }) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -160,20 +166,22 @@ function CertificateModal({
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-surface-2 border border-border text-text-primary hover:bg-surface transition-colors"
-                  title="Open in New Tab"
+                  title={openLabel}
                 >
                   <ArrowSquareOut size={14} aria-hidden="true" />
-                  <span className="hidden sm:inline">Open</span>
+                  <span className="hidden sm:inline">{openLabel}</span>
                 </a>
 
                 <a
                   href={modalState.fileUrl}
                   download
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="btn-pill-primary inline-flex items-center gap-1.5 text-xs font-medium"
-                  title="Download Certificate"
+                  title={downloadLabel}
                 >
                   <DownloadSimple size={14} aria-hidden="true" />
-                  <span className="hidden sm:inline">Download</span>
+                  <span className="hidden sm:inline">{downloadLabel}</span>
                 </a>
 
                 <button
@@ -199,6 +207,8 @@ function CertificateModal({
                 <img
                   src={modalState.fileUrl}
                   alt={modalState.name}
+                  loading="lazy"
+                  decoding="async"
                   className="max-w-full max-h-[70vh] object-contain rounded-lg border border-border shadow-2xl"
                 />
               ) : (
@@ -212,8 +222,8 @@ function CertificateModal({
 
             {/* Modal Footer Info */}
             <div className="px-5 py-2.5 flex items-center justify-between text-xs border-t border-border bg-surface text-text-muted">
-              <span>Press <kbd className="px-1.5 py-0.5 rounded bg-surface-2 border border-border font-mono text-[10px]">ESC</kbd> or click backdrop to close</span>
-              <span className="font-mono text-[11px] uppercase">{modalState.previewType} file</span>
+              <span>{escHint}</span>
+              <span className="font-mono text-[11px] uppercase">{modalState.previewType}</span>
             </div>
           </motion.div>
         </motion.div>
@@ -328,9 +338,11 @@ function CredentialCard({
           <a
             href={item.fileUrl}
             download
+            target="_blank"
+            rel="noopener noreferrer"
             aria-label={`Download certificate file: ${item.name}`}
             className="inline-flex items-center justify-center rounded-full w-9 h-9 bg-surface-2 border border-border text-text-secondary hover:text-text-primary transition-colors shrink-0"
-            title="Download Document"
+            title={viewLabel}
           >
             <DownloadSimple size={14} aria-hidden="true" />
           </a>
@@ -358,7 +370,7 @@ export function CredentialsSection() {
     id: "gabungan-seluruh-sertifikat",
     name: labels.credentials.bundleTitle,
     issuer: "Universitas Gunadarma / BNSP / Cisco / Microsoft",
-    periodOrYear: "2022 – 2026",
+    periodOrYear: "2022 - 2026",
     category: "Bundel PDF" as const,
     fileUrl: allCertificatesBundleUrl,
     previewType: "pdf" as const,
@@ -391,7 +403,7 @@ export function CredentialsSection() {
     <>
       <section
         id="sertifikasi"
-        className="border-b border-border py-20 lg:py-28 relative overflow-hidden bg-bg"
+        className="border-b border-border py-16 lg:py-24 relative overflow-hidden bg-bg"
       >
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 relative">
           {/* Section Heading */}
@@ -404,7 +416,7 @@ export function CredentialsSection() {
           >
             <div className="flex items-center gap-2 mb-3">
               <span className="font-serif-italic text-sm text-text-muted">07</span>
-              <span className="h-px w-6 bg-border" />
+              <span className="text-text-muted text-xs">•</span>
               <p className="text-xs font-medium uppercase tracking-[0.2em] text-text-muted">
                 {labels.credentials.sectionLabel}
               </p>
@@ -558,12 +570,14 @@ export function CredentialsSection() {
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-xs font-medium bg-surface border border-border text-text-primary hover:bg-surface-2 transition-colors cursor-pointer"
             >
               <FileText size={16} aria-hidden="true" />
-              <span>Preview All 14 Certificates</span>
+              <span>{labels.credentials.previewAll}</span>
             </button>
 
             <a
               href={bundleCertificate.fileUrl}
               download
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-full sm:w-auto btn-pill-primary inline-flex items-center justify-center gap-2 text-xs font-medium py-3 px-7"
             >
               <Package size={16} aria-hidden="true" />
@@ -579,6 +593,9 @@ export function CredentialsSection() {
         modalState={modalState}
         onClose={closeModal}
         closeLabel={labels.credentials.closeModal}
+        openLabel={labels.credentials.openInNewTab}
+        downloadLabel={labels.credentials.downloadAction}
+        escHint={labels.credentials.escHint}
       />
     </>
   );

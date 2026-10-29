@@ -67,11 +67,11 @@ export function TimelineSection() {
   const initial = prefersReducedMotion ? "visible" : "hidden";
 
   return (
-    <section id="riwayat" className="border-b border-border py-20 lg:py-28 relative overflow-hidden bg-bg">
+    <section id="pengalaman" className="border-b border-border py-16 lg:py-24 relative overflow-hidden bg-bg">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 relative">
         {/* Section Header */}
         <motion.div
-          className="mb-14 text-left"
+          className="mb-12 text-left"
           variants={prefersReducedMotion ? undefined : fadeInUpVariants}
           initial={initial}
           whileInView="visible"
@@ -79,7 +79,7 @@ export function TimelineSection() {
         >
           <div className="flex items-center gap-2 mb-3">
             <span className="font-serif-italic text-sm text-text-muted">06</span>
-            <span className="h-px w-6 bg-border" />
+            <span className="text-text-muted text-xs">•</span>
             <p className="text-xs font-medium uppercase tracking-[0.2em] text-text-muted">
               {labels.timeline.sectionLabel}
             </p>
@@ -180,7 +180,7 @@ export function TimelineSection() {
                 {/* Courses */}
                 <div className="mb-5">
                   <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-text-muted mb-2.5">
-                    Relevant Coursework
+                    Mata Kuliah Relevan
                   </p>
                   <div className="flex flex-wrap gap-1.5">
                     {education.relevantCourses.map((c, cIdx) => (
@@ -197,7 +197,7 @@ export function TimelineSection() {
                 {/* Activities */}
                 <div>
                   <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-text-muted mb-2">
-                    Activities &amp; Highlights
+                    Aktivitas &amp; Praktikum
                   </p>
                   <ul className="space-y-1.5">
                     {education.activities.map((act, aIdx) => (

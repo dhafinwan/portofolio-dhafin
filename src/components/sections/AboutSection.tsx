@@ -36,7 +36,7 @@ export function AboutSection() {
   ];
 
   return (
-    <section id="tentang" className="border-b border-border py-20 lg:py-28 relative overflow-hidden bg-bg">
+    <section id="tentang" className="border-b border-border py-16 lg:py-24 relative overflow-hidden bg-bg">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 relative">
         <motion.div
           variants={containerVariants}
@@ -45,10 +45,10 @@ export function AboutSection() {
           viewport={VIEWPORT}
         >
           {/* Section Header */}
-          <motion.div variants={itemVariants} className="mb-14 text-left">
+          <motion.div variants={itemVariants} className="mb-12 text-left">
             <div className="flex items-center gap-2 mb-3">
               <span className="font-serif-italic text-sm text-text-muted">02</span>
-              <span className="h-px w-6 bg-border" />
+              <span className="text-text-muted text-xs">•</span>
               <p className="text-xs font-medium uppercase tracking-[0.2em] text-text-muted">
                 {labels.about.sectionLabel}
               </p>
@@ -64,7 +64,7 @@ export function AboutSection() {
 
           {/* Bento Grid Layout */}
           <div className="grid gap-6 lg:grid-cols-3">
-            {/* Summary Bento Card — Spans 2 columns on lg */}
+            {/* Summary Bento Card */}
             <motion.div
               variants={itemVariants}
               whileHover={prefersReducedMotion ? undefined : { y: -2, transition: { duration: 0.22 } }}

@@ -8,7 +8,7 @@ const standardTransition: Transition = {
   ease: [0.25, 0.1, 0.25, 1],
 };
 
-/** Fast: 0.22s — used for hover / micro-interactions */
+/** Fast: 0.22s, used for hover / micro-interactions */
 const fastTransition: Transition = {
   duration: 0.22,
   ease: [0.25, 0.1, 0.25, 1],
@@ -20,7 +20,7 @@ const fastTransition: Transition = {
  * Standard entrance: fade + 14px translateY.
  * Use as child variant inside a stagger container, OR with
  * `whileInView="visible"` + `viewport={{ once: true, amount: 0.2 }}`.
- * Only animates `opacity` and `transform` — no layout shift.
+ * Only animates opacity and transform without layout shift.
  */
 export const fadeInUpVariants: Variants = {
   hidden: { opacity: 0, y: 14, filter: "none" },
@@ -32,7 +32,7 @@ export const fadeInUpVariants: Variants = {
 };
 
 /**
- * Fade-only variant — for elements where vertical shift causes layout issues
+ * Fade-only variant for elements where vertical shift causes layout issues
  * (e.g. text inside a flex container with fixed height).
  */
 export const fadeInVariants: Variants = {
@@ -58,10 +58,10 @@ export const containerStaggerVariants: Variants = {
 };
 
 /**
- * Viewport-aware stagger container — used with `whileInView`.
+ * Viewport-aware stagger container used with `whileInView`.
  * Container itself has no opacity animation (children handle it),
  * preventing double-fade when the container enters.
- * staggerChildren: 0.07s — max per spec.
+ * staggerChildren: 0.07s max per spec.
  */
 export const viewportContainerVariants: Variants = {
   hidden: {},
@@ -74,7 +74,7 @@ export const viewportContainerVariants: Variants = {
 };
 
 /**
- * Dense stagger — for grids with many small cards (credentials, etc.).
+ * Dense stagger for grids with many small cards (credentials, etc.).
  * Shorter delay prevents the last card feeling too slow.
  */
 export const denseStaggerVariants: Variants = {
@@ -92,7 +92,7 @@ export const denseStaggerVariants: Variants = {
 /**
  * Card hover: subtle lift (-4px Y) + faint scale.
  * Pair with `initial="rest" whileHover="hover" whileTap="tap"`.
- * Only animates `transform` — no reflow.
+ * Only animates transform without reflow.
  */
 export const cardHoverVariants: Variants = {
   rest:  { y: 0,  scale: 1,    transition: fastTransition },
@@ -154,7 +154,7 @@ export const usePrefersReducedMotion = (): boolean => {
 
 /**
  * Standard viewport config for all `whileInView` animations.
- * `once: true`  — fires only the first time the element enters.
- * `amount: 0.2` — triggers when 20% of element is visible.
+ * `once: true` fires only the first time the element enters.
+ * `amount: 0.2` triggers when 20% of element is visible.
  */
 export const VIEWPORT = { once: true, amount: 0.2 } as const;

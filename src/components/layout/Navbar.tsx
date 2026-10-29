@@ -53,7 +53,7 @@ export function Navbar() {
         <a
           href="#beranda"
           className="group relative flex items-center gap-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg rounded-md"
-          aria-label={`${profile.name} — ${labels.nav.links[0]?.label || "Home"}`}
+          aria-label={`${profile.name} • ${labels.nav.links[0]?.label || "Home"}`}
         >
           <span className="relative flex h-7 w-7 items-center justify-center rounded-full bg-fg text-bg transition-transform duration-200 group-hover:scale-105">
             <span className="text-[11px] font-mono font-bold leading-none tracking-tighter">
