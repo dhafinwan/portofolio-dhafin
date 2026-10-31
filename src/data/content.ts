@@ -1,3 +1,4 @@
+import { resolveAssetUrl } from "@/lib/utils";
 import { useApp } from "@/context/AppContext";
 
 export interface ProfileContact {
@@ -12,18 +13,31 @@ export interface ProfileContact {
 
 export interface Profile {
   name: string;
-  headline: string;
-  subtitle: string;
+  titleLine1: string;
+  titleLine2: string;
+  statusBadge: string;
   summary: string;
   location: string;
   contact: ProfileContact;
   cvFilePath: string;
 }
 
-export interface HighlightMetric {
+export interface KeyMetric {
   value: string;
   label: string;
   description: string;
+}
+
+export interface WorkFocusItem {
+  id: number;
+  title: string;
+  description: string;
+}
+
+export interface SkillCategoryGroup {
+  id: string;
+  title: string;
+  skills: string[];
 }
 
 export interface ProjectItem {
@@ -32,38 +46,28 @@ export interface ProjectItem {
   category: string;
   period: string;
   tech: string[];
-  points: string[];
+  problemAndResult: string;
+  repoUrl?: string;
+  liveUrl?: string;
   featured?: boolean;
-  href?: string;
 }
 
-export interface WorkflowStep {
-  step: number;
-  title: string;
-  description: string;
-  highlights: string[];
-}
-
-export interface WorkExperience {
+export interface ExperienceItem {
   role: string;
   company: string;
   period: string;
+  location: string;
   points: string[];
 }
 
-export interface Education {
+export interface EducationItem {
   degree: string;
   institution: string;
   location: string;
   period: string;
   gpa: string;
-  relevantCourses: string[];
-  activities: string[];
-}
-
-export interface SkillCategory {
-  category: string;
-  skills: string[];
+  thesis: string;
+  points: string[];
 }
 
 export type CredentialCategory =
@@ -83,100 +87,82 @@ export interface CertificateEvidence {
   isBundle?: boolean;
 }
 
+export interface NavLinkItem {
+  label: string;
+  href: string;
+  id: string;
+}
+
 export interface SectionLabels {
+  skipLink: string;
   nav: {
-    links: Array<{ label: string; href: string; id: string }>;
+    links: NavLinkItem[];
     cta: string;
+    toggleThemeAria: string;
+    toggleLangAria: string;
+    openMenuAria: string;
+    closeMenuAria: string;
+    navAria: string;
+    mobileNavAria: string;
   };
   hero: {
     statusBadge: string;
-    greeting: string;
     name: string;
-    headlineAccent: string;
-    roleChips: string[];
-    subtitle: string;
-    narrative: string;
+    roleHeadline: string;
+    paragraph: string;
     primaryCta: string;
     secondaryCta: string;
+    socialGithubAria: string;
+    socialLinkedinAria: string;
+    socialInstagramAria: string;
+    socialTiktokAria: string;
   };
-  highlights: {
+  bento: {
     sectionLabel: string;
     title: string;
-    titleAccent: string;
-    description: string;
-  };
-  about: {
-    sectionLabel: string;
-    title: string;
-    titleAccent: string;
-    description: string;
-    profileBadge: string;
-    degreeBadge: string;
-    quoteLead: string;
-    quoteAccent: string;
-    summary: string;
-    location: string;
-    status: string;
-    quickFacts: Array<{
-      label: string;
-      value: string;
-      badge: string;
-      accent?: boolean;
-    }>;
-  };
-  workflow: {
-    sectionLabel: string;
-    title: string;
-    titleAccent: string;
-    description: string;
+    subtitle: string;
+    profileTitle: string;
+    profileText: string;
+    overviewBadge: string;
+    focusTitle: string;
+    focusBadge: string;
+    focusFooter: string;
+    skillsTitle: string;
   };
   projects: {
     sectionLabel: string;
     title: string;
-    titleAccent: string;
-    description: string;
-    featuredBadge: string;
-    otherProjectsHeader: string;
-    viewRepo: string;
-    viewProject: string;
-  };
-  skills: {
-    sectionLabel: string;
-    title: string;
-    titleAccent: string;
-    description: string;
+    subtitle: string;
+    viewCode: string;
+    viewLive: string;
   };
   timeline: {
     sectionLabel: string;
     title: string;
-    titleAccent: string;
-    description: string;
-    experienceTab: string;
-    educationTab: string;
+    subtitle: string;
+    experienceHeading: string;
+    educationHeading: string;
+    gpaLabel: string;
+    thesisLabel: string;
   };
   credentials: {
     sectionLabel: string;
     title: string;
-    titleAccent: string;
-    description: string;
+    subtitle: string;
     allTab: string;
     categories: Record<string, string>;
-    viewEvidence: string;
+    viewCertificate: string;
     downloadBundle: string;
     downloadFile: string;
     closeModal: string;
-    bundleTitle: string;
-    bundleDesc: string;
     openInNewTab: string;
-    downloadAction: string;
     escHint: string;
-    previewAll: string;
+    bundleNotice: string;
   };
   contact: {
-    bannerTag: string;
+    tag: string;
     title: string;
-    titleAccent: string;
-    description: string;
+    subtitle: string;
     emailCta: string;
     cvCta: string;
     copyright: string;
@@ -185,14 +171,14 @@ export interface SectionLabels {
 
 export interface PortfolioContent {
   profile: Profile;
-  highlights: HighlightMetric[];
+  keyMetrics: KeyMetric[];
+  workFocus: WorkFocusItem[];
+  skillGroups: SkillCategoryGroup[];
   projects: ProjectItem[];
-  workflow: WorkflowStep[];
-  experience: WorkExperience[];
-  education: Education;
-  skills: SkillCategory[];
-  allCertificates: CertificateEvidence[];
-  allCertificatesBundleUrl: string;
+  experience: ExperienceItem[];
+  education: EducationItem;
+  certificates: CertificateEvidence[];
+  certificatesBundleUrl: string;
   labels: SectionLabels;
 }
 
@@ -204,7 +190,7 @@ export const allCertificates: CertificateEvidence[] = [
     issuer: "BNSP (LSP Informatika)",
     periodOrYear: "2026",
     category: "Data & AI",
-    fileUrl: encodeURI("/certificates/Sementara LSP Data Science.pdf"),
+    fileUrl: resolveAssetUrl("/certificates/Sementara LSP Data Science.pdf"),
     previewType: "pdf",
   },
   {
@@ -213,7 +199,7 @@ export const allCertificates: CertificateEvidence[] = [
     issuer: "Universitas Gunadarma",
     periodOrYear: "Mei 2026",
     category: "Data & AI",
-    fileUrl: encodeURI("/certificates/Data Science Course (First Case).pdf"),
+    fileUrl: resolveAssetUrl("/certificates/Data Science Course (First Case).pdf"),
     previewType: "pdf",
   },
   {
@@ -222,88 +208,88 @@ export const allCertificates: CertificateEvidence[] = [
     issuer: "Universitas Gunadarma",
     periodOrYear: "Mei 2026",
     category: "Data & AI",
-    fileUrl: encodeURI("/certificates/Data Science Course (Second Case).pdf"),
+    fileUrl: resolveAssetUrl("/certificates/Data Science Course (Second Case).pdf"),
     previewType: "pdf",
   },
   {
     id: "junior-network-administrator",
     name: "Junior Network Administrator",
     issuer: "BNSP",
-    periodOrYear: "Apr 2022 - Apr 2025",
+    periodOrYear: "2022 - 2025",
     category: "Network & IT",
-    fileUrl: encodeURI("/certificates/Junior Network Administrator.jpg"),
+    fileUrl: resolveAssetUrl("/certificates/Junior Network Administrator.jpg"),
     previewType: "image",
   },
   {
     id: "intro-wireless-lan",
     name: "Introduction to wireless LAN installation",
     issuer: "Cisco Networking Academy",
-    periodOrYear: "Okt 2024",
+    periodOrYear: "2024",
     category: "Network & IT",
-    fileUrl: encodeURI("/certificates/Introduction to wireless LAN installation.pdf"),
+    fileUrl: resolveAssetUrl("/certificates/Introduction to wireless LAN installation.pdf"),
     previewType: "pdf",
   },
   {
     id: "golang-beginner",
     name: "GO-LANG FOR BEGINNER",
     issuer: "Universitas Gunadarma",
-    periodOrYear: "Feb 2024",
+    periodOrYear: "2024",
     category: "Programming & DB",
-    fileUrl: encodeURI("/certificates/GO-LANG FOR BEGINNER.pdf"),
+    fileUrl: resolveAssetUrl("/certificates/GO-LANG FOR BEGINNER.pdf"),
     previewType: "pdf",
   },
   {
     id: "golang-intermediate",
     name: "GO-LANG FOR INTERMEDIATE",
     issuer: "Universitas Gunadarma",
-    periodOrYear: "Feb 2025",
+    periodOrYear: "2025",
     category: "Programming & DB",
-    fileUrl: encodeURI("/certificates/GO-LANG FOR INTERMEDIATE.pdf"),
+    fileUrl: resolveAssetUrl("/certificates/GO-LANG FOR INTERMEDIATE.pdf"),
     previewType: "pdf",
   },
   {
     id: "oracle-beginner",
     name: "ORACLE FOR BEGINNER",
     issuer: "Universitas Gunadarma / Oracle",
-    periodOrYear: "Agu 2023",
+    periodOrYear: "2023",
     category: "Programming & DB",
-    fileUrl: encodeURI("/certificates/ORACLE FOR BEGINNER.pdf"),
+    fileUrl: resolveAssetUrl("/certificates/ORACLE FOR BEGINNER.pdf"),
     previewType: "pdf",
   },
   {
     id: "oracle-intermediate",
     name: "ORACLE FOR INTERMEDIATE",
     issuer: "Universitas Gunadarma / Oracle",
-    periodOrYear: "Agu 2025",
+    periodOrYear: "2025",
     category: "Programming & DB",
-    fileUrl: encodeURI("/certificates/ORACLE FOR INTERMEDIATE.pdf"),
+    fileUrl: resolveAssetUrl("/certificates/ORACLE FOR INTERMEDIATE.pdf"),
     previewType: "pdf",
   },
   {
     id: "fundamental-dbms",
     name: "FUNDAMENTAL DBMS",
     issuer: "Universitas Gunadarma",
-    periodOrYear: "Agu 2023",
+    periodOrYear: "2023",
     category: "Programming & DB",
-    fileUrl: encodeURI("/certificates/FUNDAMENTAL DBMS.pdf"),
+    fileUrl: resolveAssetUrl("/certificates/FUNDAMENTAL DBMS.pdf"),
     previewType: "pdf",
   },
   {
     id: "fundamental-web-programming",
     name: "FUNDAMENTAL WEB PROGRAMMING",
     issuer: "Universitas Gunadarma",
-    periodOrYear: "Feb 2023",
+    periodOrYear: "2023",
     category: "Programming & DB",
-    fileUrl: encodeURI("/certificates/FUNDAMENTAL WEB PROGRAMMING.pdf"),
+    fileUrl: resolveAssetUrl("/certificates/FUNDAMENTAL WEB PROGRAMMING.pdf"),
     previewType: "pdf",
   },
   {
     id: "mos-2016",
     name: "MOS 2016 (Microsoft Office Specialist)",
-    issuer: "Microsoft",
+    issuer: "Microsoft / Certiport",
     periodOrYear: "2022",
     category: "General & Office",
-    fileUrl: encodeURI("/certificates/MOS 2016.pdf"),
+    fileUrl: resolveAssetUrl("/certificates/MOS 2016.pdf"),
     previewType: "pdf",
   },
   {
@@ -312,7 +298,7 @@ export const allCertificates: CertificateEvidence[] = [
     issuer: "Universitas Gunadarma",
     periodOrYear: "2023",
     category: "General & Office",
-    fileUrl: encodeURI("/certificates/Aptitude Test.pdf"),
+    fileUrl: resolveAssetUrl("/certificates/Aptitude Test.pdf"),
     previewType: "pdf",
   },
   {
@@ -321,13 +307,13 @@ export const allCertificates: CertificateEvidence[] = [
     issuer: "BNSP / Gunadarma / Cisco / Microsoft",
     periodOrYear: "2022 - 2026",
     category: "Bundel PDF",
-    fileUrl: encodeURI("/certificates/Gabungan seluruh sertifikat.pdf"),
+    fileUrl: resolveAssetUrl("/certificates/Gabungan seluruh sertifikat.pdf"),
     previewType: "pdf",
     isBundle: true,
   },
 ];
 
-export const allCertificatesBundleUrl = encodeURI("/certificates/Gabungan seluruh sertifikat.pdf");
+export const allCertificatesBundleUrl = resolveAssetUrl("/certificates/Gabungan seluruh sertifikat.pdf");
 
 const sharedContact: ProfileContact = {
   email: "dhafinkurniawan3@gmail.com",
@@ -338,137 +324,140 @@ const sharedContact: ProfileContact = {
   tiktok: "https://tiktok.com/@finn.code",
 };
 
-// ─── KONTEN BILINGUAL LENGKAP (INDONESIA & ENGLISH) ──────────────────────────
 export const portfolioContent: Record<"id" | "en", PortfolioContent> = {
   id: {
     profile: {
       name: "Dhafin Kurniawan",
-      headline: "S1 Informatika • Associate Data Scientist (BNSP) • IT & Web Developer",
-      subtitle: "S1 Informatika Universitas Gunadarma • Associate Data Scientist (BNSP)",
+      titleLine1: "Dhafin Kurniawan",
+      titleLine2: "Data Analyst, Web Developer & IT Operations.",
+      statusBadge: "Tersedia untuk Full-Time & Project",
       summary:
-        "Lulusan S1 Informatika (IPK 3,80) yang senang membuat pekerjaan teknis jadi lebih rapi dan efisien. Terbiasa mengolah data menggunakan Python dan SQL, membangun aplikasi web, serta menangani operasional sistem dan jaringan.",
+        "Lulusan S1 Informatika Universitas Gunadarma (IPK 3,80) dan Associate Data Scientist (BNSP). Terbiasa mengolah data menjadi laporan, membangun aplikasi web dan skrip Python, serta menjaga operasional harian IT.",
       location: "Pamulang, Tangerang Selatan, Banten, Indonesia",
       contact: sharedContact,
-      cvFilePath: encodeURI("/cv/CV_DHAFIN KURNIAWAN.pdf"),
+      cvFilePath: resolveAssetUrl("/cv/CV_DHAFIN KURNIAWAN.pdf"),
     },
-    highlights: [
+    keyMetrics: [
       {
-        value: "94,34%",
-        label: "Akurasi Klasifikasi Teks",
-        description: "Hasil pengujian model IndoBERT untuk klasifikasi otomatis abstrak jurnal ilmiah skripsi.",
+        value: "3,80 / 4,00",
+        label: "IPK S1 Informatika",
+        description: "Lulusan Universitas Gunadarma dengan predikat Sangat Memuaskan.",
       },
       {
-        value: "4.941",
-        label: "Abstrak Jurnal Diolah",
-        description: "Data teks yang diambil dari portal Garuda dan BIMA, lalu dirapikan ke format CSV.",
+        value: "BNSP",
+        label: "Associate Data Scientist",
+        description: "Sertifikasi kompetensi resmi bidang sains data dari LSP Informatika.",
       },
       {
-        value: "5+",
-        label: "Proyek IT & Data",
-        description: "Aplikasi web Streamlit, skrip otomasi Python, dan implementasi sistem database.",
+        value: "14+",
+        label: "Sertifikasi & Pelatihan",
+        description: "Kompetensi terverifikasi di bidang data, pemrograman, jaringan, dan database.",
+      },
+    ],
+    workFocus: [
+      {
+        id: 1,
+        title: "Data Analysis & Reporting",
+        description:
+          "Mengolah dan membersihkan data kotor dengan Pandas dan SQL, menganalisis pola, serta membuat laporan rutin dan dashboard visual.",
       },
       {
-        value: "3,80",
-        label: "IPK Kelulusan (Skala 4,00)",
-        description: "Lulusan S1 Informatika Universitas Gunadarma dengan predikat Sangat Memuaskan.",
+        id: 2,
+        title: "Web Development & Python Automation",
+        description:
+          "Membangun website interaktif dengan React atau Streamlit, serta membuat skrip Python untuk mengotomasi tugas rutin yang berulang.",
+      },
+      {
+        id: 3,
+        title: "IT Support & Operations",
+        description:
+          "Menjaga komputer, koneksi jaringan lokal LAN/WLAN, dan sistem operasi tetap stabil, serta menangani operasional siaran live streaming.",
+      },
+    ],
+    skillGroups: [
+      {
+        id: "data-python",
+        title: "Data & Python",
+        skills: [
+          "Python",
+          "Pandas",
+          "Scikit-learn",
+          "PyTorch",
+          "IndoBERT / NLP",
+          "SQL",
+          "Data Cleaning",
+          "Excel/CSV Reporting",
+        ],
+      },
+      {
+        id: "web-software",
+        title: "Web & Software",
+        skills: [
+          "React",
+          "TypeScript",
+          "Tailwind CSS",
+          "Streamlit",
+          "Go (Golang)",
+          "HTML/CSS",
+          "Git & GitHub",
+          "Selenium Web Scraping",
+        ],
+      },
+      {
+        id: "database-it-ops",
+        title: "Database, Network & IT Ops",
+        skills: [
+          "MySQL",
+          "SQL Server",
+          "Oracle DB",
+          "LAN/WLAN Installation",
+          "ICMP Network Monitoring",
+          "Live Streaming Operations",
+          "Windows/Hardware Troubleshooting",
+        ],
       },
     ],
     projects: [
       {
         id: "indobert-journal-classification",
-        title: "Sistem Klasifikasi Otomatis Abstrak Jurnal (Streamlit & IndoBERT)",
+        title: "Sistem Klasifikasi Otomatis Abstrak Jurnal Ilmiah",
         category: "Web App & NLP",
-        period: "Agu 2026",
+        period: "2026",
         featured: true,
-        tech: ["Python", "Streamlit", "Hugging Face", "BeautifulSoup", "Pandas"],
-        points: [
-          "Program Python otomatis untuk mengambil dan merapikan ribuan data abstrak jurnal dari portal Garuda dan BIMA ke dalam format CSV siap olah.",
-          "Membangun antarmuka web interaktif dengan Streamlit agar pengguna bisa mengunggah file abstrak dan mendapatkan hasil kategori secara instan.",
-          "Menerapkan model IndoBERT dengan akurasi pengujian 94,34% lengkap dengan indikator skor keyakinan prediksi.",
-          "Mengembangkan seluruh alur kerja mulai dari scraping data, pembersihan teks, pelatihan model, hingga aplikasi web siap pakai.",
-        ],
+        tech: ["Python", "IndoBERT", "Streamlit", "Pandas", "Hugging Face", "PyTorch"],
+        problemAndResult:
+          "Ribuan abstrak jurnal penelitian sulit dikelompokkan secara manual ke dalam kategori bidang ilmu. Sistem ini mengotomasi scraping jurnal Garuda/BIMA, melatih model IndoBERT dengan akurasi 94,34%, dan menyajikan aplikasi web Streamlit siap pakai.",
+        repoUrl: "https://github.com/dhafinwan",
       },
       {
         id: "used-car-price-prediction",
         title: "Aplikasi Estimasi Harga Pasar Mobil Bekas",
-        category: "Data Analysis & Prediksi",
-        period: "Jun 2026",
+        category: "Machine Learning & Data",
+        period: "2026",
         tech: ["Python", "Scikit-learn", "Pandas", "Matplotlib", "Seaborn"],
-        points: [
-          "Mengolah 4.300+ data pasar mobil bekas dan melatih model Random Forest untuk memperkirakan harga wajar berdasarkan spesifikasi kendaraan.",
-          "Membersihkan data anomali dan menganalisis variabel utama yang paling berpengaruh terhadap harga jual.",
-          "Menyajikan metrik performa prediksi yang jelas agar mudah dipahami pengguna awam.",
-        ],
+        problemAndResult:
+          "Calon pembeli dan penjual mobil sering kesulitan memperkirakan harga pasar wajar berdasarkan spesifikasi teknis kendaraan. Model Random Forest ini dilatih menggunakan 4.300+ data pasar yang telah dibersihkan untuk memprediksi harga secara transparan.",
+        repoUrl: "https://github.com/dhafinwan",
       },
       {
         id: "diabetes-risk-classification",
-        title: "Dashboard Analisis & Skrining Risiko Kesehatan",
+        title: "Dashboard Skrining & Analisis Risiko Diabetes",
         category: "Data Analysis & Visualisasi",
-        period: "Okt 2025",
-        tech: ["Python", "Scikit-learn", "Pandas", "Plotly"],
-        points: [
-          "Mengolah data indikator kesehatan dan membandingkan metode analisis untuk mendeteksi risiko awal diabetes dengan akurasi 90%.",
-          "Menyeimbangkan sebaran data sampel menggunakan SMOTE agar prediksi lebih adil dan tidak bias.",
-          "Membuat visualisasi grafik interaktif dengan Plotly untuk mempermudah pengecekan faktor risiko.",
-        ],
+        period: "2025",
+        tech: ["Python", "Scikit-learn", "Pandas", "Plotly", "SMOTE"],
+        problemAndResult:
+          "Ketidakseimbangan data pasien sering kali menyebabkan hasil skrining risiko diabetes menjadi bias terhadap kelompok tertentu. Sistem ini menerapkan penyeimbangan data dengan SMOTE dan menghasilkan akurasi prediksi 90% menggunakan grafik interaktif Plotly.",
+        repoUrl: "https://github.com/dhafinwan",
       },
       {
         id: "electric-vehicle-sentiment-analysis",
-        title: "Pemantauan Opini Publik Kendaraan Listrik di YouTube",
-        category: "Otomasi Data & Sentimen",
-        period: "Jul 2025",
-        tech: ["Python", "YouTube API", "NLP Sastrawi", "Naive Bayes", "SMOTE"],
-        points: [
-          "Mengambil ribuan data komentar publik dari YouTube secara otomatis untuk menganalisis respon masyarakat terhadap mobil dan motor listrik.",
-          "Membersihkan teks dari bahasa gaul dan singkatan, lalu mengelompokkannya menjadi opini positif, netral, dan negatif (akurasi 78,28%).",
-          "Menyusun laporan ringkasan opini yang menggabungkan hasil teks dengan data survei kuantitatif.",
-        ],
-      },
-      {
-        id: "academic-vision-architecture",
-        title: "Skrip Peningkatan Citra & Perancangan Arsitektur Sistem",
-        category: "Sistem & IT Support",
-        period: "2024 - 2026",
-        tech: ["Python", "Google Colab", "Distributed Systems", "SOA Architecture"],
-        points: [
-          "Membuat program Python untuk meningkatkan pencahayaan dan kontras gambar digital secara otomatis.",
-          "Merancang rancangan arsitektur sistem berbasis Service-Oriented Architecture (SOA) untuk alur pemrosesan data yang terstruktur.",
-        ],
-      },
-    ],
-    workflow: [
-      {
-        step: 1,
-        title: "Pengolahan Data & Pelaporan",
-        description:
-          "Mengambil data dari database atau scraping web, membersihkan data yang belum rapi, lalu menyusunnya menjadi laporan dan dashboard yang informatif.",
-        highlights: [
-          "Ekstraksi dan pembersihan data kotor (Pandas & SQL)",
-          "Penyusunan laporan berkala & visualisasi ringkas",
-          "Dashboard interaktif dengan Streamlit & Plotly",
-        ],
-      },
-      {
-        step: 2,
-        title: "Pengembangan Web & Otomasi",
-        description:
-          "Membangun website responsif serta membuat skrip Python untuk mengotomasi tugas rutin agar pekerjaan tim selesai lebih cepat.",
-        highlights: [
-          "Pembuatan aplikasi web interaktif & responsif",
-          "Skrip otomatisasi Python untuk pekerjaan berulang",
-          "Integrasi API publik dan pemrosesan file batch",
-        ],
-      },
-      {
-        step: 3,
-        title: "Operasional IT & Jaringan",
-        description:
-          "Menjaga perangkat keras, sistem operasi, koneksi jaringan lokal (LAN/WLAN), dan software siaran tetap stabil tanpa kendala teknis.",
-        highlights: [
-          "Troubleshooting komputer, OS, dan software",
-          "Pengaturan dan pemantauan jaringan lokal (LAN)",
-          "Operator teknis siaran live streaming secara real-time",
-        ],
+        title: "Pemantauan Sentimen Publik Kendaraan Listrik di YouTube",
+        category: "NLP & Otomasi Data",
+        period: "2025",
+        tech: ["Python", "YouTube API", "NLP Sastrawi", "Naive Bayes", "Pandas"],
+        problemAndResult:
+          "Tingginya volume komentar publik di YouTube memerlukan analisis terstruktur untuk memantau sentimen terhadap kendaraan listrik. Skrip Python ini mengambil data komentar via YouTube API, membersihkan bahasa slang, dan mengelompokkan sentimen dengan akurasi 78,28%.",
+        repoUrl: "https://github.com/dhafinwan",
       },
     ],
     experience: [
@@ -476,207 +465,108 @@ export const portfolioContent: Record<"id" | "en", PortfolioContent> = {
         role: "Operator Live Streaming",
         company: "EMBA Group",
         period: "Des 2025 - Mar 2026",
+        location: "Tangerang, Indonesia",
         points: [
-          "Mengawasi software live streaming, performa server, dan koneksi internet agar siaran produk berjalan stabil tanpa putus.",
-          "Sigap mengatasi kendala teknis software dan jaringan secara langsung selama siaran berlangsung.",
-          "Berkoordinasi dengan tim produksi untuk memastikan seluruh peralatan siap sebelum jadwal siaran dimulai.",
+          "Mengoperasikan software OBS dan vMix serta memantau koneksi internet agar siaran produk berjalan lancar.",
+          "Mengatasi kendala teknis software, drop frame, dan audio secara langsung untuk mencegah downtime.",
+          "Menyiapkan tata letak kamera, pencahayaan studio, dan input audio sebelum jadwal siaran dimulai.",
+        ],
+      },
+      {
+        role: "Koordinator Acara & Anggaran (RAB)",
+        company: "Panitia Kemerdekaan Pemuda",
+        period: "Jul 2024 - Agu 2024",
+        location: "Tangerang Selatan, Indonesia",
+        points: [
+          "Menyusun Rencana Anggaran Biaya (RAB) dan jadwal kegiatan kepanitiaan agar alokasi dana efisien.",
+          "Mengkoordinasikan kebutuhan sound system, panggung, dan logistik acara hingga selesai.",
+          "Menyusun laporan pertanggungjawaban keuangan dan operasional kegiatan secara transparan.",
         ],
       },
     ],
     education: {
-      degree: "S1 Informatika",
+      degree: "S1 Informatika (Sarjana Komputer)",
       institution: "Universitas Gunadarma",
       location: "Depok, Jawa Barat",
       period: "Sep 2022 - Agu 2026",
-      gpa: "3,80/4,00",
-      relevantCourses: [
-        "Basis Data",
-        "Rekayasa Perangkat Lunak",
-        "Pemrograman Jaringan",
-        "Analisis Data",
-        "Machine Learning",
-        "Pemrosesan Bahasa Alami (NLP)",
-      ],
-      activities: [
-        "Aktif mengerjakan praktikum di Laboratorium Informatika Universitas Gunadarma.",
-        "Menyelesaikan proyek skripsi klasifikasi dokumen ilmiah dengan predikat Sangat Memuaskan.",
+      gpa: "3,80 / 4,00 (Sangat Memuaskan)",
+      thesis: "Penerapan IndoBERT untuk Klasifikasi Otomatis Abstrak Jurnal Ilmiah Teknik Mesin",
+      points: [
+        "Menyelesaikan studi sarjana dalam 4 tahun dengan IPK 3,80 dari skala 4,00.",
+        "Mengembangkan skripsi klasifikasi teks abstrak jurnal penelitian menggunakan model IndoBERT dengan akurasi 94,34%.",
+        "Menyelesaikan seluruh modul praktikum laboratorium: Basis Data, Pemrograman Berorientasi Objek, dan Jaringan Komputer.",
       ],
     },
-    skills: [
-      {
-        category: "Data & Reporting",
-        skills: [
-          "Python",
-          "SQL",
-          "Pandas",
-          "Data Cleaning",
-          "Web Scraping",
-          "Matplotlib & Seaborn",
-          "Plotly",
-          "Machine Learning Dasar",
-          "NLP & Text Processing",
-          "Feature Engineering",
-          "SMOTE",
-          "Outlier Handling (IQR)",
-        ],
-      },
-      {
-        category: "Web & Pemrograman",
-        skills: [
-          "Python",
-          "JavaScript / TypeScript",
-          "HTML & CSS",
-          "Streamlit",
-          "REST API",
-          "Go (Dasar)",
-          "PHP",
-          "Git & GitHub",
-        ],
-      },
-      {
-        category: "Database & Sistem",
-        skills: [
-          "Oracle Database",
-          "MySQL / DBMS",
-          "Relational Database Design",
-          "Query Optimization",
-          "System Architecture (SOA)",
-          "Linux & Windows Environment",
-        ],
-      },
-      {
-        category: "IT Support & Jaringan",
-        skills: [
-          "Network Troubleshooting",
-          "Wireless LAN Setup",
-          "Junior Network Administration",
-          "System Monitoring",
-          "Live Streaming Ops",
-          "Technical Troubleshooting",
-          "Microsoft Office (MOS)",
-        ],
-      },
-    ],
-    allCertificates,
-    allCertificatesBundleUrl,
+    certificates: allCertificates,
+    certificatesBundleUrl: allCertificatesBundleUrl,
     labels: {
+      skipLink: "Lompat ke konten utama",
       nav: {
         links: [
           { label: "Beranda", href: "#beranda", id: "beranda" },
-          { label: "Tentang", href: "#tentang", id: "tentang" },
-          { label: "Fokus Kerja", href: "#fokus-kerja", id: "fokus-kerja" },
+          { label: "Profil & Keahlian", href: "#profil-keahlian", id: "profil-keahlian" },
           { label: "Proyek", href: "#proyek", id: "proyek" },
-          { label: "Keahlian", href: "#keahlian", id: "keahlian" },
           { label: "Pengalaman", href: "#pengalaman", id: "pengalaman" },
           { label: "Sertifikasi", href: "#sertifikasi", id: "sertifikasi" },
         ],
         cta: "Hubungi Saya",
+        toggleThemeAria: "Ganti mode warna tema",
+        toggleLangAria: "Ganti pilihan bahasa",
+        openMenuAria: "Buka menu navigasi",
+        closeMenuAria: "Tutup menu navigasi",
+        navAria: "Navigasi Utama",
+        mobileNavAria: "Navigasi Seluler",
       },
       hero: {
-        statusBadge: "S1 Informatika Universitas Gunadarma • Associate Data Scientist (BNSP)",
-        greeting: "Halo, saya",
-        name: "Dhafin Kurniawan.",
-        headlineAccent: "Fokus di pengolahan data, pengembangan web, dan operasional IT.",
-        roleChips: [
-          "Informatics Graduate",
-          "Associate Data Scientist",
-          "Web & Python Developer",
-          "IT & Network Operations",
-        ],
-        subtitle: "S1 Informatika Universitas Gunadarma • Associate Data Scientist (BNSP)",
-        narrative:
-          "Lulusan S1 Informatika (IPK 3,80) yang senang membuat pekerjaan teknis jadi lebih rapi dan efisien. Terbiasa mengolah data menggunakan Python dan SQL, membangun aplikasi web, serta menangani operasional sistem dan jaringan.",
+        statusBadge: "Tersedia untuk Full-Time & Project",
+        name: "Dhafin Kurniawan",
+        roleHeadline: "Data Analyst, Web Developer & IT Operations.",
+        paragraph:
+          "Lulusan S1 Informatika Universitas Gunadarma (IPK 3,80) dan Associate Data Scientist (BNSP). Terbiasa mengolah data menjadi laporan, membangun aplikasi web dan skrip Python, serta menjaga operasional harian IT.",
         primaryCta: "Hubungi Saya",
         secondaryCta: "Lihat CV (PDF)",
+        socialGithubAria: "Buka profil GitHub Dhafin Kurniawan",
+        socialLinkedinAria: "Buka profil LinkedIn Dhafin Kurniawan",
+        socialInstagramAria: "Buka profil Instagram @dhafinwan",
+        socialTiktokAria: "Buka profil TikTok @finn.code",
       },
-      highlights: {
-        sectionLabel: "Pencapaian Utama",
-        title: "Ringkasan",
-        titleAccent: "Hasil Nyata",
-        description:
-          "Metrik konkret dari studi akademik dan proyek teknis yang telah saya selesaikan.",
-      },
-      about: {
-        sectionLabel: "Tentang Saya",
-        title: "Mengenal Lebih Dekat",
-        titleAccent: "Dhafin Kurniawan",
-        description:
-          "Lulusan Informatika yang siap membantu kebutuhan operasional IT, analisis data, dan pembuatan aplikasi web.",
-        profileBadge: "Profil Singkat",
-        degreeBadge: "S1 Informatika Gunadarma",
-        quoteLead: "Saya senang menyederhanakan proses kerja yang rumit menjadi",
-        quoteAccent: "sistem yang rapi, otomatis, dan mudah digunakan",
-        summary:
-          "Selama kuliah dan bekerja, saya terbiasa menangani tugas teknis secara mandiri maupun tim. Mulai dari mengumpulkan dan membersihkan ribuan data kotor, menyusun laporan analisis, membuat aplikasi web praktis, hingga menjaga kelancaran jaringan dan live streaming saat siaran langsung.",
-        location: "Pamulang, Tangerang Selatan, Indonesia",
-        status: "Siap Bekerja (Full-time / Kontrak)",
-        quickFacts: [
-          {
-            label: "Pendidikan",
-            value: "S1 Informatika, Univ. Gunadarma",
-            badge: "Lulus 2026",
-            accent: false,
-          },
-          {
-            label: "Prestasi Akademik",
-            value: "IPK 3,80 / 4,00 (Sangat Memuaskan)",
-            badge: "Akademik",
-            accent: true,
-          },
-          {
-            label: "Pengalaman Kerja",
-            value: "Operator Live Streaming di EMBA Group",
-            badge: "Operasional & Jaringan",
-            accent: false,
-          },
-          {
-            label: "Fokus Keahlian",
-            value: "Data & Reporting, Web Development, IT Support",
-            badge: "Kompetensi",
-            accent: false,
-          },
-        ],
-      },
-      workflow: {
-        sectionLabel: "Fokus Kerja",
-        title: "Bidang yang",
-        titleAccent: "Saya Kerjakan",
-        description:
-          "Tiga area pekerjaan yang menjadi keahlian utama saya untuk membantu kebutuhan tim.",
+      bento: {
+        sectionLabel: "Profil & Keahlian",
+        title: "Ringkasan Profil & Kemampuan Teknis",
+        subtitle:
+          "Kombinasi analisis data, rekayasa web, dan keandalan operasional sistem untuk mendukung target tim kerja.",
+        profileTitle: "Tentang Dhafin",
+        profileText:
+          "Saya memiliki latar belakang komputasi dan analisis data dengan fokus pada pemecahan masalah praktis melalui kode yang rapi. Saya menikmati proses mengubah data mentah menjadi laporan yang jelas, membangun aplikasi web yang mempercepat pekerjaan, serta menjaga sistem operasional tetap berjalan stabil.",
+        overviewBadge: "Ringkasan",
+        focusTitle: "3 Fokus Kerja Utama",
+        focusBadge: "Kompetensi",
+        focusFooter: "Teruji dalam proyek praktis dan kebutuhan operasional.",
+        skillsTitle: "Keahlian & Tech Stack",
       },
       projects: {
         sectionLabel: "Proyek Pilihan",
-        title: "Hasil Kerja &",
-        titleAccent: "Proyek Nyata",
-        description:
-          "Beberapa proyek teknis yang pernah saya bangun, mulai dari aplikasi web skripsi, analisis data, hingga skrip otomasi.",
-        featuredBadge: "Proyek Unggulan • Skripsi S1",
-        otherProjectsHeader: "Proyek Lainnya",
-        viewRepo: "Lihat Repositori",
-        viewProject: "Buka Aplikasi",
-      },
-      skills: {
-        sectionLabel: "Keahlian Teknis",
-        title: "Perangkat &",
-        titleAccent: "Keahlian yang Dikuasai",
-        description:
-          "Teknologi, bahasa pemrograman, dan alat bantu kerja yang biasa saya gunakan.",
+        title: "Studi Kasus & Proyek Nyata",
+        subtitle:
+          "Daftar proyek teknis yang dirancang untuk menyelesaikan kebutuhan nyata, dari klasifikasi teks hingga visualisasi data.",
+        viewCode: "Lihat Kode",
+        viewLive: "Buka Aplikasi",
       },
       timeline: {
         sectionLabel: "Pengalaman & Pendidikan",
-        title: "Riwayat Kerja &",
-        titleAccent: "Latar Belakang Pendidikan",
-        description:
-          "Pengalaman kerja praktis di lapangan dan pendidikan formal di bidang Informatika.",
-        experienceTab: "Pengalaman Kerja",
-        educationTab: "Pendidikan Formal",
+        title: "Riwayat Kerja & Latar Belakang Akademik",
+        subtitle:
+          "Pengalaman operasional langsung di lapangan yang dipadukan dengan dasar pendidikan formal di bidang Informatika.",
+        experienceHeading: "Pengalaman Kerja & Operasional",
+        educationHeading: "Pendidikan Formal",
+        gpaLabel: "IPK Kelulusan",
+        thesisLabel: "Topik Skripsi",
       },
       credentials: {
-        sectionLabel: "Sertifikasi & Pelatihan",
-        title: "Sertifikat Resmi &",
-        titleAccent: "Pelatihan Keahlian",
-        description:
-          "Daftar sertifikat kompetensi nasional (BNSP), pelatihan teknologi, dan sertifikat resmi yang bisa langsung dilihat atau diunduh.",
+        sectionLabel: "Sertifikasi & Kredensial",
+        title: "Bukti Sertifikat & Pelatihan Resmi",
+        subtitle:
+          "14 sertifikat kompetensi nasional (BNSP), pelatihan teknologi, dan keahlian resmi yang dapat langsung dilihat atau diunduh.",
         allTab: "Semua",
         categories: {
           "Data & AI": "Data & AI",
@@ -684,27 +574,22 @@ export const portfolioContent: Record<"id" | "en", PortfolioContent> = {
           "Network & IT": "Network & IT",
           "General & Office": "General & Office",
         },
-        viewEvidence: "Buka Dokumen",
+        viewCertificate: "Lihat Sertifikat",
         downloadBundle: "Unduh Semua Sertifikat (PDF Lengkap)",
-        downloadFile: "Unduh Dokumen",
+        downloadFile: "Unduh File",
         closeModal: "Tutup",
-        bundleTitle: "Bundel Seluruh Sertifikat (14 Dokumen)",
-        bundleDesc:
-          "Gabungan seluruh sertifikat resmi dari BNSP, Gunadarma, Cisco, dan Microsoft dalam satu file PDF ringkas.",
         openInNewTab: "Buka di Tab Baru",
-        downloadAction: "Unduh",
-        escHint: "Tekan ESC atau klik latar belakang untuk menutup",
-        previewAll: "Pratinjau Seluruh 14 Sertifikat",
+        escHint: "Tekan ESC atau klik area luar untuk menutup jendela",
+        bundleNotice: "Bundel resmi mencakup 14 sertifikat terverifikasi dalam satu file PDF gabungan.",
       },
       contact: {
-        bannerTag: "Mari Terhubung",
-        title: "Tertarik Berkolaborasi atau",
-        titleAccent: "Merekrut Saya?",
-        description:
-          "Saya siap berkontribusi pada posisi IT Support, Pengolahan Data & Pelaporan, Pengembangan Web, maupun Operasional Sistem. Silakan hubungi saya melalui email atau lihat CV lengkap saya.",
-        emailCta: "Kirim Email",
+        tag: "Kontak & Kolaborasi",
+        title: "Siap Berkontribusi untuk Tim Anda",
+        subtitle:
+          "Saya terbuka untuk kesempatan kerja penuh waktu (Full-Time) maupun proyek teknis di bidang Analisis Data, Web Development, dan IT Support. Silakan kirim pesan atau tinjau berkas CV saya.",
+        emailCta: "Hubungi Saya",
         cvCta: "Lihat CV (PDF)",
-        copyright: "Hak Cipta Dilindungi • Dhafin Kurniawan.",
+        copyright: "Dhafin Kurniawan. Seluruh hak cipta dilindungi.",
       },
     },
   },
@@ -712,132 +597,136 @@ export const portfolioContent: Record<"id" | "en", PortfolioContent> = {
   en: {
     profile: {
       name: "Dhafin Kurniawan",
-      headline: "Informatics Graduate • Associate Data Scientist (BNSP) • IT & Web Developer",
-      subtitle: "Informatics Graduate • Certified Associate Data Scientist (BNSP)",
+      titleLine1: "Dhafin Kurniawan",
+      titleLine2: "Data Analyst, Web Developer & IT Operations.",
+      statusBadge: "Available for Full-Time & Projects",
       summary:
-        "An Informatics graduate from Universitas Gunadarma (GPA 3.80/4.00) who enjoys turning raw data into clear reports, automating tasks with Python, and building reliable web and network systems.",
+        "Informatics graduate from Universitas Gunadarma (GPA 3.80) and BNSP-certified Associate Data Scientist. Experienced in turning raw data into clear reports, building web apps and Python automation, and managing daily IT operations.",
       location: "Pamulang, South Tangerang, Banten, Indonesia",
       contact: sharedContact,
-      cvFilePath: encodeURI("/cv/CV_DHAFIN KURNIAWAN.pdf"),
+      cvFilePath: resolveAssetUrl("/cv/CV_DHAFIN KURNIAWAN.pdf"),
     },
-    highlights: [
+    keyMetrics: [
       {
-        value: "94.34%",
-        label: "Text Classification Accuracy",
-        description: "IndoBERT model evaluation score on undergraduate thesis academic paper abstract dataset.",
+        value: "3.80 / 4.00",
+        label: "Informatics Degree GPA",
+        description: "Graduated from Gunadarma University with high honors.",
       },
       {
-        value: "4,941",
-        label: "Journal Abstracts Processed",
-        description: "Scraped from Garuda and BIMA research portals and structured into clean CSV datasets.",
+        value: "BNSP",
+        label: "Associate Data Scientist",
+        description: "Nationally accredited data science competency certification from LSP Informatika.",
       },
       {
-        value: "5+",
-        label: "Data & IT Projects Built",
-        description: "Streamlit web applications, Python automation suites, and relational database setups.",
+        value: "14+",
+        label: "Certificates & Training",
+        description: "Verified credentials across data, development, networking, and databases.",
+      },
+    ],
+    workFocus: [
+      {
+        id: 1,
+        title: "Data Analysis & Reporting",
+        description:
+          "Extracting and cleaning datasets with Pandas and SQL, analyzing trends, and preparing periodic reports and visual dashboards.",
       },
       {
-        value: "3.80",
-        label: "Degree GPA (4.00 Scale)",
-        description: "Informatics graduate from Gunadarma University with high honors academic distinction.",
+        id: 2,
+        title: "Web Development & Python Automation",
+        description:
+          "Building interactive web apps with React or Streamlit, and writing Python automation scripts to speed up repetitive tasks.",
+      },
+      {
+        id: 3,
+        title: "IT Support & Operations",
+        description:
+          "Maintaining computers, local LAN/WLAN connections, and operating systems, and managing live streaming broadcasts.",
+      },
+    ],
+    skillGroups: [
+      {
+        id: "data-python",
+        title: "Data & Python",
+        skills: [
+          "Python",
+          "Pandas",
+          "Scikit-learn",
+          "PyTorch",
+          "IndoBERT / NLP",
+          "SQL",
+          "Data Cleaning",
+          "Excel/CSV Reporting",
+        ],
+      },
+      {
+        id: "web-software",
+        title: "Web & Software",
+        skills: [
+          "React",
+          "TypeScript",
+          "Tailwind CSS",
+          "Streamlit",
+          "Go (Golang)",
+          "HTML/CSS",
+          "Git & GitHub",
+          "Selenium Web Scraping",
+        ],
+      },
+      {
+        id: "database-it-ops",
+        title: "Database, Network & IT Ops",
+        skills: [
+          "MySQL",
+          "SQL Server",
+          "Oracle DB",
+          "LAN/WLAN Installation",
+          "ICMP Network Monitoring",
+          "Live Streaming Operations",
+          "Windows/Hardware Troubleshooting",
+        ],
       },
     ],
     projects: [
       {
         id: "indobert-journal-classification",
-        title: "Automated Academic Text Classification System (Streamlit & IndoBERT)",
+        title: "Automated Academic Text Classification System",
         category: "Web App & NLP",
-        period: "Aug 2026",
+        period: "2026",
         featured: true,
-        tech: ["Python", "Streamlit", "Hugging Face", "BeautifulSoup", "Pandas"],
-        points: [
-          "Automated Python pipeline to scrape and structure thousands of journal abstracts from the Garuda and BIMA research portals into clean CSV format.",
-          "Built a practical web application with Streamlit where users can paste abstracts or upload batches to get instant topic predictions.",
-          "Implemented an IndoBERT model achieving 94.34% test accuracy with confidence score indicators.",
-          "Managed the full cycle from web scraping and preprocessing to model evaluation and final web deployment.",
-        ],
+        tech: ["Python", "IndoBERT", "Streamlit", "Pandas", "Hugging Face", "PyTorch"],
+        problemAndResult:
+          "Manually organizing thousands of research paper abstracts into academic fields is slow and difficult. This system scrapes papers from Garuda/BIMA, fine-tunes an IndoBERT model to 94.34% accuracy, and deploys an interactive Streamlit web tool.",
+        repoUrl: "https://github.com/dhafinwan",
       },
       {
         id: "used-car-price-prediction",
         title: "Used Vehicle Market Price Estimation Tool",
-        category: "Data Analytics & ML",
-        period: "Jun 2026",
+        category: "Machine Learning & Data",
+        period: "2026",
         tech: ["Python", "Scikit-learn", "Pandas", "Matplotlib", "Seaborn"],
-        points: [
-          "Analyzed 4,300+ car listings and trained a Random Forest model to forecast fair market values based on vehicle specifications.",
-          "Cleaned outlier data and identified the primary features driving vehicle resale value.",
-          "Reported clear model error metrics (MAE, RMSE, and R2) for transparent results.",
-        ],
+        problemAndResult:
+          "Car buyers and sellers often struggle to determine fair vehicle market prices based on technical specifications. This Random Forest model was trained on 4,300+ cleaned market records to predict fair prices transparently.",
+        repoUrl: "https://github.com/dhafinwan",
       },
       {
         id: "diabetes-risk-classification",
-        title: "Early Health Risk Screening & Analytics Dashboard",
-        category: "Data Analytics & Dashboard",
-        period: "Oct 2025",
-        tech: ["Python", "Scikit-learn", "Pandas", "Plotly"],
-        points: [
-          "Processed clinical indicators across classification models to flag early diabetes risk factors with 90% accuracy.",
-          "Applied SMOTE to address class imbalance for balanced and reliable predictive outcomes.",
-          "Built interactive charts with Plotly so non-technical users can explore clinical risk trends easily.",
-        ],
+        title: "Diabetes Risk Screening & Analytics Dashboard",
+        category: "Data Analysis & Visualisasi",
+        period: "2025",
+        tech: ["Python", "Scikit-learn", "Pandas", "Plotly", "SMOTE"],
+        problemAndResult:
+          "Imbalanced clinical patient datasets often cause early diabetes screening models to produce biased results. This system balances sample distributions with SMOTE and achieves 90% predictive accuracy with interactive Plotly visual charts.",
+        repoUrl: "https://github.com/dhafinwan",
       },
       {
         id: "electric-vehicle-sentiment-analysis",
         title: "Electric Vehicle Public Sentiment Monitoring System",
-        category: "Data Automation & NLP",
-        period: "Jul 2025",
-        tech: ["Python", "YouTube API", "NLP Sastrawi", "Naive Bayes", "SMOTE"],
-        points: [
-          "Extracted thousands of public comments via the YouTube API to understand consumer reactions toward electric vehicles in Indonesia.",
-          "Cleaned slang and colloquial terms, then categorized feedback into positive, neutral, and negative sentiment (78.28% accuracy).",
-          "Synthesized text findings with survey data into an easy-to-read summary report.",
-        ],
-      },
-      {
-        id: "academic-vision-architecture",
-        title: "Digital Image Enhancement & System Architecture",
-        category: "Systems & IT Support",
-        period: "2024 - 2026",
-        tech: ["Python", "Google Colab", "Distributed Systems", "SOA Architecture"],
-        points: [
-          "Wrote Python routines for programmatic brightness and contrast adjustment across image datasets.",
-          "Drafted a Service-Oriented Architecture (SOA) blueprint for structured data processing workflows.",
-        ],
-      },
-    ],
-    workflow: [
-      {
-        step: 1,
-        title: "Data Analytics & Reporting",
-        description:
-          "Extracting data from databases or web endpoints, cleaning inconsistencies, and assembling clear reports and dashboards.",
-        highlights: [
-          "Data extraction and preprocessing (Pandas & SQL)",
-          "Periodic performance reports & clear visualizations",
-          "Interactive dashboards using Streamlit & Plotly",
-        ],
-      },
-      {
-        step: 2,
-        title: "Web Development & Automation",
-        description:
-          "Building responsive web interfaces and developing Python scripts to automate repetitive tasks and save valuable team hours.",
-        highlights: [
-          "Practical, user-friendly web applications",
-          "Python scripts to automate manual routines",
-          "API integrations and batch data pipelines",
-        ],
-      },
-      {
-        step: 3,
-        title: "IT Support & Digital Operations",
-        description:
-          "Maintaining workstation health, operating systems, local area networks (LAN/WLAN), and live streaming setups for zero downtime.",
-        highlights: [
-          "Hardware, OS, and application troubleshooting",
-          "Local network setup and connection monitoring",
-          "Real-time technical operator for live broadcasts",
-        ],
+        category: "NLP & Otomasi Data",
+        period: "2025",
+        tech: ["Python", "YouTube API", "NLP Sastrawi", "Naive Bayes", "Pandas"],
+        problemAndResult:
+          "High volumes of public YouTube comments require automated processing to understand consumer reactions toward electric vehicles. This Python script extracts comments via YouTube API, cleans informal slang, and classifies sentiment with 78.28% accuracy.",
+        repoUrl: "https://github.com/dhafinwan",
       },
     ],
     experience: [
@@ -845,10 +734,22 @@ export const portfolioContent: Record<"id" | "en", PortfolioContent> = {
         role: "Live Streaming Operator",
         company: "EMBA Group",
         period: "Dec 2025 - Mar 2026",
+        location: "Tangerang, Indonesia",
         points: [
-          "Monitored streaming software, server health, and network connectivity to guarantee stable, uninterrupted broadcasts.",
-          "Troubleshot real-time software glitches and network connection drops on the spot during live sessions.",
-          "Worked closely with the production team to verify hardware, camera feeds, and software readiness prior to airtime.",
+          "Operated OBS and vMix broadcasting software and monitored network stability during live product streams.",
+          "Resolved software glitches, frame drops, and audio sync issues in real time to avoid downtime.",
+          "Configured camera angles, studio lighting, and audio mixer inputs according to production standards.",
+        ],
+      },
+      {
+        role: "Event & Budget Coordinator (RAB)",
+        company: "Youth Independence Committee",
+        period: "Jul 2024 - Aug 2024",
+        location: "South Tangerang, Indonesia",
+        points: [
+          "Prepared detailed budget plans (RAB) and timelines for cost-effective event resource allocation.",
+          "Coordinated sound systems, staging, and logistics to keep the community event running on schedule.",
+          "Drafted transparent financial and operational reports for all committee members.",
         ],
       },
     ],
@@ -857,195 +758,84 @@ export const portfolioContent: Record<"id" | "en", PortfolioContent> = {
       institution: "Gunadarma University",
       location: "Depok, West Java, Indonesia",
       period: "Sep 2022 - Aug 2026",
-      gpa: "3.80 / 4.00",
-      relevantCourses: [
-        "Database Systems",
-        "Software Engineering",
-        "Network Programming",
-        "Data Analysis",
-        "Machine Learning",
-        "Natural Language Processing",
-      ],
-      activities: [
-        "Completed intensive coursework and lab assignments at Gunadarma Informatics Laboratory.",
-        "Completed an undergraduate thesis on automated scientific document classification with top honors.",
+      gpa: "3.80 / 4.00 (High Honors)",
+      thesis: "Application of IndoBERT for Automated Classification of Mechanical Engineering Journal Abstracts",
+      points: [
+        "Completed the 4-year undergraduate degree with a 3.80 GPA on a 4.00 scale.",
+        "Built a thesis on academic paper abstract classification using IndoBERT, achieving 94.34% accuracy.",
+        "Completed rigorous laboratory coursework in Database Systems, Object-Oriented Programming, and Computer Networks.",
       ],
     },
-    skills: [
-      {
-        category: "Data & Reporting",
-        skills: [
-          "Python",
-          "SQL",
-          "Pandas",
-          "Data Cleaning",
-          "Web Scraping",
-          "Matplotlib & Seaborn",
-          "Plotly",
-          "Applied Machine Learning",
-          "NLP & Text Processing",
-          "Feature Engineering",
-          "SMOTE",
-          "Outlier Handling (IQR)",
-        ],
-      },
-      {
-        category: "Web & Programming",
-        skills: [
-          "Python",
-          "JavaScript / TypeScript",
-          "HTML & CSS",
-          "Streamlit",
-          "REST APIs",
-          "Go (Fundamentals)",
-          "PHP",
-          "Git & GitHub",
-        ],
-      },
-      {
-        category: "Database & Systems",
-        skills: [
-          "Oracle Database",
-          "MySQL / DBMS",
-          "Relational Database Design",
-          "Query Optimization",
-          "System Architecture (SOA)",
-          "Linux & Windows Environments",
-        ],
-      },
-      {
-        category: "IT Support & Networking",
-        skills: [
-          "Network Troubleshooting",
-          "Wireless LAN Setup",
-          "Junior Network Administration",
-          "System Monitoring",
-          "Live Streaming Ops",
-          "Technical Troubleshooting",
-          "Microsoft Office (MOS)",
-        ],
-      },
-    ],
-    allCertificates,
-    allCertificatesBundleUrl,
+    certificates: allCertificates,
+    certificatesBundleUrl: allCertificatesBundleUrl,
     labels: {
+      skipLink: "Skip to main content",
       nav: {
         links: [
           { label: "Home", href: "#beranda", id: "beranda" },
-          { label: "About", href: "#tentang", id: "tentang" },
-          { label: "What I Do", href: "#fokus-kerja", id: "fokus-kerja" },
+          { label: "Profile & Skills", href: "#profil-keahlian", id: "profil-keahlian" },
           { label: "Projects", href: "#proyek", id: "proyek" },
-          { label: "Skills", href: "#keahlian", id: "keahlian" },
           { label: "Experience", href: "#pengalaman", id: "pengalaman" },
           { label: "Certifications", href: "#sertifikasi", id: "sertifikasi" },
         ],
         cta: "Contact Me",
+        toggleThemeAria: "Toggle color theme",
+        toggleLangAria: "Toggle language selection",
+        openMenuAria: "Open navigation menu",
+        closeMenuAria: "Close navigation menu",
+        navAria: "Main Navigation",
+        mobileNavAria: "Mobile Navigation",
       },
       hero: {
-        statusBadge: "Informatics Graduate • Certified Associate Data Scientist (BNSP)",
-        greeting: "Hi, I'm",
-        name: "Dhafin Kurniawan.",
-        headlineAccent: "Working across data analysis, web development, and IT operations.",
-        roleChips: [
-          "Informatics Graduate",
-          "Associate Data Scientist",
-          "Web & Python Developer",
-          "IT & Network Operations",
-        ],
-        subtitle: "Informatics Graduate • Certified Associate Data Scientist (BNSP)",
-        narrative:
-          "An Informatics graduate from Universitas Gunadarma (GPA 3.80/4.00) who enjoys turning raw data into clear reports, automating tasks with Python, and building reliable web and network systems.",
+        statusBadge: "Available for Full-Time & Projects",
+        name: "Dhafin Kurniawan",
+        roleHeadline: "Data Analyst, Web Developer & IT Operations.",
+        paragraph:
+          "Informatics graduate from Universitas Gunadarma (GPA 3.80) and BNSP-certified Associate Data Scientist. Experienced in turning raw data into clear reports, building web apps and Python automation, and managing daily IT operations.",
         primaryCta: "Contact Me",
         secondaryCta: "View Resume (PDF)",
+        socialGithubAria: "View Dhafin Kurniawan's GitHub profile",
+        socialLinkedinAria: "View Dhafin Kurniawan's LinkedIn profile",
+        socialInstagramAria: "View Dhafin Kurniawan's Instagram profile",
+        socialTiktokAria: "View Dhafin Kurniawan's TikTok profile",
       },
-      highlights: {
-        sectionLabel: "Key Highlights",
-        title: "Measurable",
-        titleAccent: "Results",
-        description:
-          "Concrete metrics from academic studies and technical projects I have built.",
-      },
-      about: {
-        sectionLabel: "About Me",
-        title: "A Quick Look at",
-        titleAccent: "Dhafin Kurniawan",
-        description:
-          "An Informatics graduate ready to support IT operations, data reporting, and web application needs.",
-        profileBadge: "Quick Bio",
-        degreeBadge: "B.S. Informatics",
-        quoteLead: "I enjoy turning complex, repetitive manual work into",
-        quoteAccent: "clean, automated, and easy-to-use systems",
-        summary:
-          "Throughout my studies and hands-on work, I have handled end-to-end technical responsibilities: from scraping and cleaning messy datasets to crafting interactive dashboards, building web utilities, and maintaining network stability during live broadcasts.",
-        location: "Pamulang, South Tangerang, Indonesia",
-        status: "Available for Work (Full-time / Contract)",
-        quickFacts: [
-          {
-            label: "Education",
-            value: "B.S. in Informatics, Gunadarma Univ.",
-            badge: "Class of 2026",
-            accent: false,
-          },
-          {
-            label: "Academic Record",
-            value: "GPA 3.80 / 4.00 (High Honors)",
-            badge: "Honors",
-            accent: true,
-          },
-          {
-            label: "Work Experience",
-            value: "Live Streaming Operator at EMBA Group",
-            badge: "Ops & Network",
-            accent: false,
-          },
-          {
-            label: "Core Competency",
-            value: "Data & Reporting, Web Development, IT Support",
-            badge: "Competencies",
-            accent: false,
-          },
-        ],
-      },
-      workflow: {
-        sectionLabel: "What I Do",
-        title: "Core Areas of",
-        titleAccent: "My Work",
-        description:
-          "Three primary domains where I apply practical skills to support team productivity.",
+      bento: {
+        sectionLabel: "Profile & Skills",
+        title: "Profile Summary & Technical Capabilities",
+        subtitle:
+          "Combining data analytics, web engineering, and reliable IT operational support to deliver team objectives.",
+        profileTitle: "About Dhafin",
+        profileText:
+          "I have a computer science and data analysis background focused on solving practical problems through clean code. I enjoy turning raw data into clear reports, building web applications that speed up work, and keeping operational systems running reliably.",
+        overviewBadge: "Overview",
+        focusTitle: "3 Core Work Focus Areas",
+        focusBadge: "Capabilities",
+        focusFooter: "Proven across practical projects and operational needs.",
+        skillsTitle: "Skills & Tech Stack",
       },
       projects: {
         sectionLabel: "Featured Projects",
-        title: "Hands-on Work &",
-        titleAccent: "Key Projects",
-        description:
-          "Selected technical projects I have built, ranging from my undergraduate thesis application to data analytics and automation scripts.",
-        featuredBadge: "Flagship Project • B.S. Thesis",
-        otherProjectsHeader: "Other Projects",
-        viewRepo: "View Code",
-        viewProject: "Open Project",
-      },
-      skills: {
-        sectionLabel: "Technical Skills",
-        title: "Tools &",
-        titleAccent: "Technologies I Use",
-        description:
-          "Languages, software tools, and frameworks I use in everyday engineering work.",
+        title: "Case Studies & Practical Work",
+        subtitle:
+          "A selection of technical projects built to solve practical challenges, from NLP text classification to data visualization dashboards.",
+        viewCode: "View Code",
+        viewLive: "Open App",
       },
       timeline: {
         sectionLabel: "Experience & Education",
-        title: "Work History &",
-        titleAccent: "Academic Background",
-        description:
-          "Hands-on work experience in live broadcasting and formal education in Computer Science.",
-        experienceTab: "Work Experience",
-        educationTab: "Formal Education",
+        title: "Work History & Academic Background",
+        subtitle:
+          "Hands-on operational experience in live broadcasting paired with formal education in Computer Science.",
+        experienceHeading: "Work Experience & Operations",
+        educationHeading: "Formal Education",
+        gpaLabel: "Graduation GPA",
+        thesisLabel: "Thesis Topic",
       },
       credentials: {
-        sectionLabel: "Certifications & Training",
-        title: "Verified",
-        titleAccent: "Certificates & Training",
-        description:
-          "Official competency credentials (BNSP), technical courses, and certifications available for direct preview and download.",
+        sectionLabel: "Certifications & Credentials",
+        title: "Verified Certificates & Training",
+        subtitle:
+          "14 national competency credentials (BNSP), technical courses, and certifications available for direct preview and download.",
         allTab: "All",
         categories: {
           "Data & AI": "Data & AI",
@@ -1053,40 +843,33 @@ export const portfolioContent: Record<"id" | "en", PortfolioContent> = {
           "Network & IT": "Network & IT",
           "General & Office": "General & Office",
         },
-        viewEvidence: "View Document",
-        downloadBundle: "Download All Certificates (PDF Bundle)",
-        downloadFile: "Download Document",
+        viewCertificate: "View Certificate",
+        downloadBundle: "Download All Certificates (Complete PDF)",
+        downloadFile: "Download File",
         closeModal: "Close",
-        bundleTitle: "Complete Certificates Bundle (14 Files)",
-        bundleDesc:
-          "All official credentials from BNSP, Gunadarma, Cisco, and Microsoft compiled into a single verified PDF.",
         openInNewTab: "Open in New Tab",
-        downloadAction: "Download",
-        escHint: "Press ESC or click backdrop to close",
-        previewAll: "Preview All 14 Certificates",
+        escHint: "Press ESC or click outside to close the dialog",
+        bundleNotice: "Official bundle includes 14 verified certificates in one compiled PDF document.",
       },
       contact: {
-        bannerTag: "Get in Touch",
-        title: "Interested in Working",
-        titleAccent: "Together?",
-        description:
-          "I am available for opportunities in IT Support, Data & Reporting Analysis, Web Development, and Digital System Operations. Feel free to send an email or review my resume.",
-        emailCta: "Send an Email",
+        tag: "Contact & Collaboration",
+        title: "Ready to Deliver Value to Your Team",
+        subtitle:
+          "I am actively open to full-time opportunities and technical projects in Data Analysis, Web Development, and IT Support. Feel free to reach out via email or review my resume.",
+        emailCta: "Contact Me",
         cvCta: "View Resume (PDF)",
-        copyright: "All rights reserved • Dhafin Kurniawan.",
+        copyright: "Dhafin Kurniawan. All rights reserved.",
       },
     },
   },
 };
 
-// Backward-compatible default export
+// Backward compatibility helper
 export const portfolioData: PortfolioContent = portfolioContent.id;
 
-// Getter by language
 export const getContent = (lang: "id" | "en"): PortfolioContent =>
   portfolioContent[lang] || portfolioContent.id;
 
-// React Hook to easily consume bilingual content
 export function usePortfolioContent(): PortfolioContent {
   const { lang } = useApp();
   return portfolioContent[lang] || portfolioContent.id;

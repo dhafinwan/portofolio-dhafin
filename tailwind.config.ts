@@ -8,7 +8,6 @@ const config: Config = {
   darkMode: "class",
   theme: {
     extend: {
-      // ── Swiss Editorial / Independent Studio "Forma" tokens ──────
       colors: {
         bg:          "var(--sh-bg)",
         fg:          "var(--sh-fg)",
@@ -22,17 +21,15 @@ const config: Config = {
           inverse:   "var(--sh-bg)",
         },
         accent: {
-          DEFAULT:   "var(--sh-fg)",
-          text:      "var(--sh-fg)",
+          DEFAULT:   "var(--sh-accent)",
+          text:      "var(--sh-accent)",
         },
       },
 
-      // ── Typography: Geist + Instrument Serif ─────────────────────
       fontFamily: {
-        sans:    ["'Geist'", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
-        heading: ["'Geist'", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
-        body:    ["'Geist'", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
-        serif:   ["'Instrument Serif'", "Georgia", "serif"],
+        sans:    ["'Plus Jakarta Sans'", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
+        heading: ["'Plus Jakarta Sans'", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
+        body:    ["'Plus Jakarta Sans'", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
         mono:    ["'JetBrains Mono'", "ui-monospace", "monospace"],
       },
       fontSize: {
@@ -47,24 +44,24 @@ const config: Config = {
         "4xl": ["2.25rem",   { lineHeight: "1.15" }],
         "5xl": ["3rem",      { lineHeight: "1.08" }],
         "6xl": ["3.75rem",   { lineHeight: "1.04" }],
-        "7xl": ["4.5rem",    { lineHeight: "1.02" }],
       },
       letterSpacing: {
         tighter: "-0.04em",
         tight:   "-0.025em",
         normal:  "0em",
         wide:    "0.05em",
-        wider:   "0.1em",
-        widest:  "0.15em",
       },
       borderRadius: {
         none: "0",
         sm:   "6px",
         md:   "10px",
         lg:   "14px",
-        xl:   "20px",
-        "2xl":"28px",
+        xl:   "18px",
+        "2xl":"24px",
         full: "9999px",
+      },
+      maxWidth: {
+        prose: "62ch",
       },
     },
   },

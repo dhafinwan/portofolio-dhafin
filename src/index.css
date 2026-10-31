@@ -3,90 +3,92 @@
 @tailwind utilities;
 
 /* ══════════════════════════════════════════════════════════════════════
-   DESIGN SYSTEM: Swiss Editorial / Independent Studio "Forma"
-   Palette: Warm Matte Charcoal (#111110) & Warm Stone Paper (#EBE9E5)
-   Typography: Geist (Sans) + Instrument Serif (Italic Accent)
+   DESIGN SYSTEM: Clean Tech (Vercel / Linear / Stripe Standard)
+   Palette: Clean Zinc & Slate with Emerald status accents
+   Typography: Plus Jakarta Sans (Primary UI & Heading) + JetBrains Mono (Tech tags & index only)
    ══════════════════════════════════════════════════════════════════════ */
 
 @layer base {
+  /* ── Light Mode Palette ── */
   :root,
-  [data-theme="dark"],
-  .dark {
-    /* ── Dark Mode Palette (Default) ── */
-    --sh-bg:             #111110;   /* Warm Matte Charcoal */
-    --sh-surface:        #181816;   /* Card Surface */
-    --sh-surface-2:      #20201D;   /* Nested Element Surface */
-    --sh-surface-3:      #272623;   /* Tag / Badge Surface */
-    --sh-fg:             #F1EFEA;   /* Warm Ivory Text / Monochrome Accent */
-    --sh-text-secondary: #A3A19A;   /* Secondary Body Text */
-    --sh-text-muted:     #73716B;   /* Metadata / Subtle Text */
-    --sh-border:         color-mix(in srgb, currentColor 14%, transparent);
-    --sh-border-hover:   color-mix(in srgb, currentColor 26%, transparent);
-    --sh-pill-bg:        #F1EFEA;
-    --sh-pill-fg:        #111110;
-
-    /* Backward compatibility mappings */
-    --color-bg:            var(--sh-bg);
-    --color-surface:       var(--sh-surface);
-    --color-surface-2:     var(--sh-surface-2);
-    --color-surface-3:     var(--sh-surface-3);
-    --color-text-primary:  var(--sh-fg);
-    --color-text-secondary:var(--sh-text-secondary);
-    --color-text-muted:    var(--sh-text-muted);
-    --color-text-inverse:  var(--sh-bg);
-    --color-border:        var(--sh-border);
-    --color-border-subtle: var(--sh-border);
-    --color-border-hover:  var(--sh-border-hover);
-    --color-accent:        var(--sh-fg);
-    --color-accent-text:   var(--sh-fg);
-    --color-focus-ring:    var(--sh-fg);
-
-    color-scheme: dark;
-  }
-
   [data-theme="light"],
   html:not(.dark) {
-    /* ── Light Mode Palette ── */
-    --sh-bg:             #EBE9E5;   /* Warm Stone Paper */
-    --sh-surface:        #E2DFD9;   /* Card Surface */
-    --sh-surface-2:      #D7D4CD;   /* Nested Element Surface */
-    --sh-surface-3:      #CCC8C0;   /* Tag / Badge Surface */
-    --sh-fg:             #151514;   /* Deep Warm Charcoal Text / Accent */
-    --sh-text-secondary: #5C5B57;   /* Secondary Body Text */
-    --sh-text-muted:     #87857F;   /* Metadata / Subtle Text */
-    --sh-border:         color-mix(in srgb, currentColor 14%, transparent);
-    --sh-border-hover:   color-mix(in srgb, currentColor 26%, transparent);
-    --sh-pill-bg:        #151514;
-    --sh-pill-fg:        #EBE9E5;
+    --sh-bg:             #FAFAFA;   /* Crisp Alabaster White */
+    --sh-surface:        #FFFFFF;   /* Pure White */
+    --sh-surface-2:      #F4F4F5;   /* Zinc 100 */
+    --sh-fg:             #09090B;   /* Zinc 950, crisp & clear */
+    --sh-text-secondary: #52525B;   /* Zinc 600 */
+    --sh-text-muted:     #71717A;   /* Zinc 500 */
+    --sh-border:         #E4E4E7;   /* Zinc 200 */
+    --sh-border-hover:   #D4D4D8;   /* Zinc 300 */
+    --sh-accent:         #09090B;   /* Zinc 950 Pure Monochrome */
+    --sh-status-online:  #10B981;   /* Emerald 500 */
+    --sh-pill-bg:        #09090B;   /* Zinc 950 */
+    --sh-pill-fg:        #FAFAFA;   /* Zinc 50 */
+    --sh-card-shadow:    0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
 
     /* Backward compatibility mappings */
-    --color-bg:            var(--sh-bg);
-    --color-surface:       var(--sh-surface);
-    --color-surface-2:     var(--sh-surface-2);
-    --color-surface-3:     var(--sh-surface-3);
-    --color-text-primary:  var(--sh-fg);
-    --color-text-secondary:var(--sh-text-secondary);
-    --color-text-muted:    var(--sh-text-muted);
-    --color-text-inverse:  var(--sh-bg);
-    --color-border:        var(--sh-border);
-    --color-border-subtle: var(--sh-border);
-    --color-border-hover:  var(--sh-border-hover);
-    --color-accent:        var(--sh-fg);
-    --color-accent-text:   var(--sh-fg);
-    --color-focus-ring:    var(--sh-fg);
+    --color-bg:             var(--sh-bg);
+    --color-surface:        var(--sh-surface);
+    --color-surface-2:      var(--sh-surface-2);
+    --color-text-primary:   var(--sh-fg);
+    --color-text-secondary: var(--sh-text-secondary);
+    --color-text-muted:     var(--sh-text-muted);
+    --color-text-inverse:   var(--sh-bg);
+    --color-border:         var(--sh-border);
+    --color-border-subtle:  var(--sh-border);
+    --color-border-hover:   var(--sh-border-hover);
+    --color-accent:         var(--sh-accent);
+    --color-accent-text:    var(--sh-fg);
+    --color-focus-ring:     var(--sh-fg);
 
     color-scheme: light;
+  }
+
+  /* ── Dark Mode Palette ── */
+  [data-theme="dark"],
+  .dark {
+    --sh-bg:             #09090B;   /* Rich Zinc 950 */
+    --sh-surface:        #121215;   /* Elevated Card Surface */
+    --sh-surface-2:      #18181B;   /* Zinc 900 */
+    --sh-fg:             #FAFAFA;   /* Zinc 50 */
+    --sh-text-secondary: #A1A1AA;   /* Zinc 400 */
+    --sh-text-muted:     #71717A;   /* Zinc 500 */
+    --sh-border:         #27272A;   /* Zinc 800 */
+    --sh-border-hover:   #3F3F46;   /* Zinc 700 */
+    --sh-accent:         #FAFAFA;   /* Zinc 50 */
+    --sh-status-online:  #10B981;   /* Emerald 500 */
+    --sh-pill-bg:        #FAFAFA;   /* Zinc 50 */
+    --sh-pill-fg:        #09090B;   /* Zinc 950 */
+    --sh-card-shadow:    0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+
+    /* Backward compatibility mappings */
+    --color-bg:             var(--sh-bg);
+    --color-surface:        var(--sh-surface);
+    --color-surface-2:      var(--sh-surface-2);
+    --color-text-primary:   var(--sh-fg);
+    --color-text-secondary: var(--sh-text-secondary);
+    --color-text-muted:     var(--sh-text-muted);
+    --color-text-inverse:   var(--sh-bg);
+    --color-border:         var(--sh-border);
+    --color-border-subtle:  var(--sh-border);
+    --color-border-hover:   var(--sh-border-hover);
+    --color-accent:         var(--sh-accent);
+    --color-accent-text:    var(--sh-fg);
+    --color-focus-ring:     var(--sh-fg);
+
+    color-scheme: dark;
   }
 
   html {
     scroll-behavior: smooth;
     background-color: var(--sh-bg);
     color: var(--sh-fg);
-    font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    transition: background-color 0.25s ease, color 0.25s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   body {
@@ -94,51 +96,44 @@
     color: var(--sh-fg);
     min-height: 100vh;
     overflow-x: hidden;
-    font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     letter-spacing: -0.025em;
     color: var(--sh-fg);
   }
 
-  /* Focus ring */
+  /* High contrast accessible focus ring */
   :focus-visible {
     outline: 2px solid var(--sh-fg);
     outline-offset: 2px;
   }
 
   section[id] {
-    scroll-margin-top: 76px;
+    scroll-margin-top: 80px;
   }
 }
 
 @layer utilities {
-  /* Typography Accent: Instrument Serif Italic */
-  .font-serif-italic {
-    font-family: 'Instrument Serif', Georgia, serif;
-    font-style: italic;
-    font-weight: 400;
-  }
-
-  /* High-contrast Monochrome Pill Buttons */
+  /* High-contrast Pill Action Buttons */
   .btn-pill-primary {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    height: 2.75rem;
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
+    height: 2.5rem;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
     border-radius: 9999px;
     background-color: var(--sh-pill-bg);
     color: var(--sh-pill-fg);
     font-size: 0.875rem;
-    font-weight: 500;
+    font-weight: 600;
     letter-spacing: -0.01em;
     text-decoration: none;
-    transition: transform 0.18s ease, opacity 0.18s ease;
+    transition: transform 0.15s ease, opacity 0.15s ease, background-color 0.15s ease;
   }
 
   .btn-pill-primary:hover {
@@ -151,35 +146,36 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    height: 2.75rem;
-    padding-left: 1.375rem;
-    padding-right: 1.375rem;
+    height: 2.5rem;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
     border-radius: 9999px;
     border: 1px solid var(--sh-border);
-    background-color: transparent;
+    background-color: var(--sh-surface);
     color: var(--sh-fg);
     font-size: 0.875rem;
     font-weight: 500;
     letter-spacing: -0.01em;
     text-decoration: none;
-    transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+    transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
   }
 
   .btn-pill-secondary:hover {
-    background-color: var(--sh-surface);
+    background-color: var(--sh-surface-2);
     border-color: var(--sh-border-hover);
     transform: translateY(-1px);
   }
 
-  /* Editorial Card */
-  .card-forma {
+  /* Clean Tech Card */
+  .card-clean {
     background-color: var(--sh-surface);
     border: 1px solid var(--sh-border);
-    border-radius: 1rem;
-    transition: border-color 0.2s ease, transform 0.2s ease;
+    border-radius: 0.875rem;
+    box-shadow: var(--sh-card-shadow);
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
   }
 
-  .card-forma:hover {
+  .card-clean:hover {
     border-color: var(--sh-border-hover);
   }
 }

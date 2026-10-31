@@ -2,21 +2,15 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   usePortfolioContent,
-  allCertificates,
   CertificateEvidence,
   CredentialCategory,
 } from "@/data/content";
 import {
-  Certificate,
-  BookOpen,
-  Eye,
   DownloadSimple,
   FilePdf,
   Image as ImageIcon,
-  Package,
   ArrowSquareOut,
   X,
-  FileText,
 } from "@phosphor-icons/react";
 import {
   usePrefersReducedMotion,
@@ -34,25 +28,6 @@ const CATEGORY_KEYS: CredentialCategory[] = [
   "General & Office",
 ];
 
-function isCertification(name: string): boolean {
-  const n = name.toLowerCase();
-  return n.includes("lsp") || n.includes("administrator") || n.includes("mos");
-}
-
-function useSpotlight(prefersReducedMotion: boolean) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [hovered, setHovered] = useState(false);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current || prefersReducedMotion) return;
-    const rect = ref.current.getBoundingClientRect();
-    ref.current.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`);
-    ref.current.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`);
-  };
-
-  return { ref, hovered, setHovered, handleMouseMove };
-}
-
 interface PreviewModalState {
   isOpen: boolean;
   name: string;
@@ -69,6 +44,7 @@ function CertificateModal({
   openLabel,
   downloadLabel,
   escHint,
+  categories,
 }: {
   modalState: PreviewModalState;
   onClose: () => void;
@@ -76,6 +52,7 @@ function CertificateModal({
   openLabel: string;
   downloadLabel: string;
   escHint: string;
+  categories: Record<string, string>;
 }) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -116,114 +93,102 @@ function CertificateModal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
+          transition={{ duration: 0.18 }}
           onClick={(e) => {
             if (e.target === e.currentTarget) onClose();
           }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5"
-          style={{
-            backgroundColor: "rgba(10, 10, 10, 0.85)",
-            backdropFilter: "blur(12px)",
-            WebkitBackdropFilter: "blur(12px)",
-          }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/75 backdrop-blur-sm"
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.96, y: 12 }}
+            initial={{ opacity: 0, scale: 0.97, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96, y: 12 }}
-            transition={{ duration: 0.22, ease: [0.25, 0.1, 0.25, 1] }}
-            className="relative flex flex-col w-full max-w-4xl max-h-[92vh] rounded-2xl overflow-hidden bg-surface border border-border"
-            style={{
-              boxShadow: "0 25px 60px -15px rgba(0, 0, 0, 0.75)",
-            }}
+            exit={{ opacity: 0, scale: 0.97, y: 10 }}
+            transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+            className="relative flex flex-col w-full max-w-4xl max-h-[92vh] rounded-2xl overflow-hidden bg-surface border border-border shadow-2xl"
           >
             {/* Modal Header */}
             <div className="flex items-center justify-between gap-3 px-5 py-4 border-b border-border bg-surface">
               <div className="min-w-0 pr-2">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-text-muted">
+                  <span className="text-[11px] font-mono text-text-muted">
                     {modalState.issuer}
                   </span>
                   {modalState.category && (
                     <span className="text-[10px] px-2 py-0.5 rounded-full font-mono bg-surface-2 border border-border text-text-secondary">
-                      {modalState.category}
+                      {categories[modalState.category] || modalState.category}
                     </span>
                   )}
                 </div>
                 <h3
                   id="cert-modal-title"
-                  className="text-base font-medium truncate text-text-primary"
-                  title={modalState.name}
+                  className="text-base sm:text-lg font-semibold tracking-tight text-text-primary truncate"
                 >
                   {modalState.name}
                 </h3>
               </div>
 
-              {/* Action Buttons */}
+              {/* Action buttons */}
               <div className="flex items-center gap-2 shrink-0">
                 <a
                   href={modalState.fileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-surface-2 border border-border text-text-primary hover:bg-surface transition-colors"
+                  className="btn-pill-secondary inline-flex h-8 px-3 text-xs items-center gap-1.5"
                   title={openLabel}
                 >
-                  <ArrowSquareOut size={14} aria-hidden="true" />
+                  <ArrowSquareOut size={14} />
                   <span className="hidden sm:inline">{openLabel}</span>
                 </a>
 
                 <a
                   href={modalState.fileUrl}
                   download
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-pill-primary inline-flex items-center gap-1.5 text-xs font-medium"
+                  className="btn-pill-secondary inline-flex h-8 px-3 text-xs items-center gap-1.5"
                   title={downloadLabel}
                 >
-                  <DownloadSimple size={14} aria-hidden="true" />
+                  <DownloadSimple size={14} />
                   <span className="hidden sm:inline">{downloadLabel}</span>
                 </a>
 
                 <button
                   ref={closeButtonRef}
+                  type="button"
                   onClick={onClose}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg"
                   aria-label={closeLabel}
-                  className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-surface-2 border border-border text-text-secondary hover:text-text-primary transition-colors cursor-pointer"
                 >
-                  <X size={16} aria-hidden="true" />
+                  <X size={16} weight="bold" />
                 </button>
               </div>
             </div>
 
-            {/* Modal Body / Viewer Area */}
-            <div
-              className="flex-1 overflow-auto flex items-center justify-center p-4 sm:p-6 bg-bg"
-              style={{
-                minHeight: "450px",
-                maxHeight: "76vh",
-              }}
-            >
-              {modalState.previewType === "image" ? (
+            {/* Modal Content / Preview Frame */}
+            <div className="relative flex-1 min-h-[350px] sm:min-h-[520px] max-h-[72vh] bg-surface-2 overflow-auto flex items-center justify-center p-2 sm:p-4">
+              {modalState.previewType === "pdf" ? (
+                <iframe
+                  src={`${modalState.fileUrl}#toolbar=0&navpanes=0`}
+                  title={modalState.name}
+                  className="w-full h-full min-h-[350px] sm:min-h-[520px] rounded-lg border border-border bg-white"
+                />
+              ) : (
                 <img
                   src={modalState.fileUrl}
                   alt={modalState.name}
-                  loading="lazy"
-                  decoding="async"
-                  className="max-w-full max-h-[70vh] object-contain rounded-lg border border-border shadow-2xl"
-                />
-              ) : (
-                <iframe
-                  src={`${modalState.fileUrl}#view=FitH`}
-                  title={`Preview: ${modalState.name}`}
-                  className="w-full h-[68vh] min-h-[420px] rounded-lg border-0 shadow-inner bg-[#1e1e24]"
+                  className="max-h-[68vh] w-auto max-w-full rounded-lg object-contain shadow-md"
                 />
               )}
             </div>
 
-            {/* Modal Footer Info */}
-            <div className="px-5 py-2.5 flex items-center justify-between text-xs border-t border-border bg-surface text-text-muted">
+            {/* Modal Footer */}
+            <div className="flex items-center justify-between px-5 py-3 border-t border-border bg-surface text-xs text-text-muted">
               <span>{escHint}</span>
-              <span className="font-mono text-[11px] uppercase">{modalState.previewType}</span>
+              <button
+                type="button"
+                onClick={onClose}
+                className="hover:text-text-primary transition-colors font-medium"
+              >
+                {closeLabel}
+              </button>
             </div>
           </motion.div>
         </motion.div>
@@ -232,131 +197,12 @@ function CertificateModal({
   );
 }
 
-function CredentialCard({
-  item,
-  viewLabel,
-  onView,
-  prefersReducedMotion,
-}: {
-  item: CertificateEvidence;
-  viewLabel: string;
-  onView: () => void;
-  prefersReducedMotion: boolean;
-}) {
-  const { ref, hovered, setHovered, handleMouseMove } = useSpotlight(prefersReducedMotion);
-  const isCert = isCertification(item.name);
-
-  return (
-    <motion.div
-      variants={prefersReducedMotion ? undefined : fadeInUpVariants}
-      whileHover={prefersReducedMotion ? undefined : { y: -2, transition: { duration: 0.2 } }}
-      layout
-      className="h-full"
-    >
-      <div
-        ref={ref}
-        onMouseMove={handleMouseMove}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        className="relative flex flex-col justify-between rounded-xl p-5 sm:p-6 h-full bg-surface border border-border transition-all duration-200"
-        style={{
-          boxShadow:
-            hovered && !prefersReducedMotion
-              ? "0 12px 30px rgba(0,0,0,0.18)"
-              : "none",
-        }}
-      >
-        {/* Spotlight dynamic hover glow */}
-        {!prefersReducedMotion && (
-          <div
-            className="pointer-events-none absolute inset-0 rounded-[inherit]"
-            style={{
-              opacity: hovered ? 1 : 0,
-              transition: "opacity 0.25s ease",
-              background:
-                "radial-gradient(280px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), color-mix(in srgb, currentColor 5%, transparent), transparent 70%)",
-            }}
-          />
-        )}
-
-        {/* Card Header & Content */}
-        <div className="relative">
-          {/* Top row: Type badge & Period */}
-          <div className="flex items-center justify-between gap-2 mb-3">
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-mono uppercase tracking-wide bg-surface-2 border border-border text-text-primary">
-                {isCert ? (
-                  <Certificate size={11} aria-hidden="true" />
-                ) : (
-                  <BookOpen size={11} aria-hidden="true" />
-                )}
-                {isCert ? "Certification" : "Training"}
-              </span>
-
-              <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-mono font-medium uppercase bg-surface-2 border border-border text-text-muted">
-                {item.previewType === "pdf" ? (
-                  <FilePdf size={10} aria-hidden="true" />
-                ) : (
-                  <ImageIcon size={10} aria-hidden="true" />
-                )}
-                {item.previewType.toUpperCase()}
-              </span>
-            </div>
-
-            <span className="text-[10px] font-mono text-text-muted shrink-0">
-              {item.periodOrYear}
-            </span>
-          </div>
-
-          {/* Category Pill */}
-          <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-mono uppercase tracking-wider mb-2 bg-surface-2 border border-border text-text-muted">
-            {item.category}
-          </span>
-
-          {/* Certificate Title */}
-          <h3 className="text-sm font-medium leading-snug mt-1 text-text-primary">
-            {item.name}
-          </h3>
-
-          {/* Certificate Issuer */}
-          <p className="text-xs mt-1.5 text-text-secondary">
-            {item.issuer}
-          </p>
-        </div>
-
-        {/* Card Action Buttons */}
-        <div className="relative flex items-center gap-2 mt-5 pt-4 border-t border-border">
-          <button
-            onClick={onView}
-            aria-label={`View certificate: ${item.name}`}
-            className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-full text-xs font-medium h-9 bg-surface-2 border border-border text-text-primary hover:bg-surface hover:border-text-primary/40 transition-colors cursor-pointer"
-          >
-            <Eye size={14} aria-hidden="true" />
-            <span>{viewLabel}</span>
-          </button>
-
-          <a
-            href={item.fileUrl}
-            download
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`Download certificate file: ${item.name}`}
-            className="inline-flex items-center justify-center rounded-full w-9 h-9 bg-surface-2 border border-border text-text-secondary hover:text-text-primary transition-colors shrink-0"
-            title={viewLabel}
-          >
-            <DownloadSimple size={14} aria-hidden="true" />
-          </a>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
 export function CredentialsSection() {
-  const { labels, allCertificatesBundleUrl } = usePortfolioContent();
-  const prefersReducedMotion = usePrefersReducedMotion();
+  const { certificates, certificatesBundleUrl, labels } = usePortfolioContent();
   const [activeTab, setActiveTab] = useState<TabFilter>("Semua");
+  const prefersReducedMotion = usePrefersReducedMotion();
 
+  // Preview modal state
   const [modalState, setModalState] = useState<PreviewModalState>({
     isOpen: false,
     name: "",
@@ -365,31 +211,14 @@ export function CredentialsSection() {
     previewType: "pdf",
   });
 
-  const individualCertificates = allCertificates.filter((item) => !item.isBundle);
-  const bundleCertificate = allCertificates.find((item) => item.isBundle) || {
-    id: "gabungan-seluruh-sertifikat",
-    name: labels.credentials.bundleTitle,
-    issuer: "Universitas Gunadarma / BNSP / Cisco / Microsoft",
-    periodOrYear: "2022 - 2026",
-    category: "Bundel PDF" as const,
-    fileUrl: allCertificatesBundleUrl,
-    previewType: "pdf" as const,
-    isBundle: true,
-  };
-
-  const displayedCertificates =
-    activeTab === "Semua"
-      ? individualCertificates
-      : individualCertificates.filter((c) => c.category === activeTab);
-
-  const openPreview = (item: CertificateEvidence) => {
+  const openModal = (cert: CertificateEvidence) => {
     setModalState({
       isOpen: true,
-      name: item.name,
-      issuer: item.issuer,
-      fileUrl: item.fileUrl,
-      previewType: item.previewType,
-      category: item.category,
+      name: cert.name,
+      issuer: cert.issuer,
+      fileUrl: cert.fileUrl,
+      previewType: cert.previewType,
+      category: cert.category,
     });
   };
 
@@ -397,207 +226,156 @@ export function CredentialsSection() {
     setModalState((prev) => ({ ...prev, isOpen: false }));
   };
 
+  // Filter out bundle item from main grid
+  const individualCertificates = certificates.filter((c) => !c.isBundle);
+
+  const filteredCerts =
+    activeTab === "Semua"
+      ? individualCertificates
+      : individualCertificates.filter((c) => c.category === activeTab);
+
+  const containerVariants = prefersReducedMotion ? undefined : tabGridVariants;
+  const itemVariants = prefersReducedMotion ? undefined : fadeInUpVariants;
   const initial = prefersReducedMotion ? "visible" : "hidden";
 
   return (
-    <>
-      <section
-        id="sertifikasi"
-        className="border-b border-border py-16 lg:py-24 relative overflow-hidden bg-bg"
-      >
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 relative">
-          {/* Section Heading */}
-          <motion.div
-            className="mb-10 text-left"
-            variants={prefersReducedMotion ? undefined : fadeInUpVariants}
-            initial={initial}
-            whileInView="visible"
-            viewport={VIEWPORT}
-          >
-            <div className="flex items-center gap-2 mb-3">
-              <span className="font-serif-italic text-sm text-text-muted">07</span>
-              <span className="text-text-muted text-xs">•</span>
-              <p className="text-xs font-medium uppercase tracking-[0.2em] text-text-muted">
-                {labels.credentials.sectionLabel}
-              </p>
-            </div>
-            <h2 className="text-3xl font-medium tracking-tight sm:text-4xl text-text-primary">
-              {labels.credentials.title}{" "}
-              <span className="font-serif-italic font-normal">{labels.credentials.titleAccent}</span>
-            </h2>
-            <p className="mt-3 text-sm max-w-2xl text-text-secondary leading-relaxed">
-              {labels.credentials.description}
+    <section
+      id="sertifikasi"
+      className="border-b border-border py-16 sm:py-20 lg:py-24 relative overflow-hidden bg-bg"
+    >
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 relative">
+        {/* Section Header */}
+        <motion.div
+          className="mb-8 sm:mb-10 text-left"
+          variants={prefersReducedMotion ? undefined : fadeInUpVariants}
+          initial={initial}
+          whileInView="visible"
+          viewport={VIEWPORT}
+        >
+          <div className="flex items-center gap-2 mb-2.5">
+            <span className="h-2 w-2 rounded-full bg-text-secondary" />
+            <p className="text-xs font-mono uppercase tracking-wider text-text-secondary">
+              {labels.credentials.sectionLabel}
             </p>
-          </motion.div>
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-text-primary leading-snug">
+            {labels.credentials.title}
+          </h2>
+          <p className="mt-2 text-[15px] sm:text-base leading-[1.7] text-text-secondary max-w-prose">
+            {labels.credentials.subtitle}
+          </p>
+        </motion.div>
 
-          {/* Dedicated Bundle Banner CTA (Top) */}
-          <motion.div
-            className="mb-10 rounded-2xl p-6 sm:p-7 flex flex-col md:flex-row md:items-center justify-between gap-5 bg-surface border border-border"
-            variants={prefersReducedMotion ? undefined : fadeInUpVariants}
-            initial={initial}
-            whileInView="visible"
-            viewport={VIEWPORT}
-          >
-            <div className="flex items-start sm:items-center gap-4">
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 bg-surface-2 border border-border text-text-primary">
-                <Package size={24} aria-hidden="true" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="text-sm sm:text-base font-medium text-text-primary">
-                    {labels.credentials.bundleTitle}
-                  </h3>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-surface-2 border border-border text-text-muted">
-                    14 Files
-                  </span>
-                </div>
-                <p className="text-xs mt-1 text-text-secondary">
-                  {labels.credentials.bundleDesc}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2.5 shrink-0 self-start md:self-center">
-              <button
-                onClick={() => openPreview(bundleCertificate)}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium bg-surface-2 border border-border text-text-primary hover:bg-surface transition-colors cursor-pointer"
-              >
-                <Eye size={14} aria-hidden="true" />
-                <span>Preview</span>
-              </button>
-
-              <a
-                href={bundleCertificate.fileUrl}
-                download
-                className="btn-pill-primary inline-flex items-center gap-1.5 text-xs font-medium"
-              >
-                <DownloadSimple size={14} aria-hidden="true" />
-                <span>{labels.credentials.downloadBundle}</span>
-              </a>
-            </div>
-          </motion.div>
-
-          {/* Filter Tab Bar */}
-          <motion.div
-            className="mb-8 flex flex-wrap gap-2"
-            variants={prefersReducedMotion ? undefined : fadeInUpVariants}
-            initial={initial}
-            whileInView="visible"
-            viewport={VIEWPORT}
-            role="tablist"
-            aria-label="Filter category"
-          >
-            {/* "All" Tab */}
+        {/* Filter Tabs + Download Bundle Pill */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+          <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-xl bg-surface-2 border border-border">
             <button
-              role="tab"
-              aria-selected={activeTab === "Semua"}
+              type="button"
               onClick={() => setActiveTab("Semua")}
-              className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium transition-colors cursor-pointer ${
+              className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
                 activeTab === "Semua"
-                  ? "bg-text-primary text-bg font-semibold"
-                  : "bg-surface border border-border text-text-secondary hover:text-text-primary"
+                  ? "bg-surface text-text-primary shadow-xs font-semibold"
+                  : "text-text-secondary hover:text-text-primary"
               }`}
             >
-              <span>{labels.credentials.allTab}</span>
-              <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
-                activeTab === "Semua" ? "bg-bg/20 text-bg" : "bg-surface-2 text-text-muted"
-              }`}>
-                {individualCertificates.length}
-              </span>
+              {labels.credentials.allTab} ({individualCertificates.length})
             </button>
-
-            {/* Individual Category Tabs */}
-            {CATEGORY_KEYS.map((catKey) => {
-              const label = labels.credentials.categories[catKey] || catKey;
-              const count = individualCertificates.filter((c) => c.category === catKey).length;
-              const isActive = activeTab === catKey;
-
+            {CATEGORY_KEYS.map((cat) => {
+              const count = individualCertificates.filter((c) => c.category === cat).length;
               return (
                 <button
-                  key={catKey}
-                  role="tab"
-                  aria-selected={isActive}
-                  onClick={() => setActiveTab(catKey)}
-                  className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium transition-colors cursor-pointer ${
-                    isActive
-                      ? "bg-text-primary text-bg font-semibold"
-                      : "bg-surface border border-border text-text-secondary hover:text-text-primary"
+                  key={cat}
+                  type="button"
+                  onClick={() => setActiveTab(cat)}
+                  className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+                    activeTab === cat
+                      ? "bg-surface text-text-primary shadow-xs font-semibold"
+                      : "text-text-secondary hover:text-text-primary"
                   }`}
                 >
-                  <span>{label}</span>
-                  <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
-                    isActive ? "bg-bg/20 text-bg" : "bg-surface-2 text-text-muted"
-                  }`}>
-                    {count}
-                  </span>
+                  {labels.credentials.categories[cat] || cat} ({count})
                 </button>
               );
             })}
-          </motion.div>
+          </div>
 
-          {/* Certificate Cards Grid with AnimatePresence */}
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={activeTab}
-              className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
-              variants={prefersReducedMotion ? undefined : tabGridVariants}
-              initial={prefersReducedMotion ? "visible" : "hidden"}
-              animate="visible"
-              exit={prefersReducedMotion ? undefined : "exit"}
-            >
-              {displayedCertificates.map((cert) => (
-                <CredentialCard
-                  key={cert.id}
-                  item={cert}
-                  viewLabel={labels.credentials.viewEvidence}
-                  onView={() => openPreview(cert)}
-                  prefersReducedMotion={prefersReducedMotion}
-                />
-              ))}
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Bottom Section Footer CTA */}
-          <motion.div
-            className="mt-14 flex flex-col sm:flex-row items-center justify-center gap-3"
-            variants={prefersReducedMotion ? undefined : fadeInUpVariants}
-            initial={initial}
-            whileInView="visible"
-            viewport={VIEWPORT}
+          <a
+            href={certificatesBundleUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-pill-secondary inline-flex items-center gap-2 text-xs font-medium self-start sm:self-auto shrink-0"
           >
-            <button
-              onClick={() => openPreview(bundleCertificate)}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-xs font-medium bg-surface border border-border text-text-primary hover:bg-surface-2 transition-colors cursor-pointer"
-            >
-              <FileText size={16} aria-hidden="true" />
-              <span>{labels.credentials.previewAll}</span>
-            </button>
-
-            <a
-              href={bundleCertificate.fileUrl}
-              download
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto btn-pill-primary inline-flex items-center justify-center gap-2 text-xs font-medium py-3 px-7"
-            >
-              <Package size={16} aria-hidden="true" />
-              <span>{labels.credentials.downloadBundle}</span>
-              <DownloadSimple size={14} aria-hidden="true" />
-            </a>
-          </motion.div>
+            <DownloadSimple size={14} />
+            <span>{labels.credentials.downloadBundle}</span>
+          </a>
         </div>
-      </section>
 
-      {/* In-Page Certificate Preview Modal */}
+        {/* Certificates Grid with Uniform Card Heights */}
+        <motion.div
+          key={activeTab}
+          className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
+          variants={containerVariants}
+          initial={initial}
+          animate="visible"
+        >
+          {filteredCerts.map((cert) => (
+            <motion.div
+              key={cert.id}
+              variants={itemVariants}
+              className="rounded-2xl p-6 bg-surface border border-border shadow-xs hover:border-text-secondary/50 transition-colors duration-200 flex flex-col justify-between h-full"
+            >
+              <div>
+                {/* Card Top: Issuer & Category */}
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <span className="text-[11px] font-mono font-medium text-text-muted truncate max-w-[180px]">
+                    {cert.issuer}
+                  </span>
+                  <span className="text-[11px] font-mono text-text-muted shrink-0">
+                    {cert.periodOrYear}
+                  </span>
+                </div>
+
+                {/* Certificate Name */}
+                <h3 className="text-base font-semibold tracking-tight text-text-primary leading-snug mb-3 line-clamp-2">
+                  {cert.name}
+                </h3>
+              </div>
+
+              {/* Card Footer: Category badge & View button */}
+              <div className="pt-4 border-t border-border mt-5 flex items-center justify-between gap-2">
+                <span className="text-[11px] font-mono px-2 py-0.5 rounded-md bg-surface-2 border border-border text-text-secondary">
+                  {labels.credentials.categories[cert.category] || cert.category}
+                </span>
+
+                <button
+                  type="button"
+                  onClick={() => openModal(cert)}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-surface-2 border border-border text-text-primary hover:bg-fg hover:text-bg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg"
+                >
+                  {cert.previewType === "pdf" ? (
+                    <FilePdf size={14} />
+                  ) : (
+                    <ImageIcon size={14} />
+                  )}
+                  <span>{labels.credentials.viewCertificate}</span>
+                </button>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+
+      {/* Interactive Certificate Preview Modal */}
       <CertificateModal
         modalState={modalState}
         onClose={closeModal}
         closeLabel={labels.credentials.closeModal}
         openLabel={labels.credentials.openInNewTab}
-        downloadLabel={labels.credentials.downloadAction}
+        downloadLabel={labels.credentials.downloadFile}
         escHint={labels.credentials.escHint}
+        categories={labels.credentials.categories}
       />
-    </>
+    </section>
   );
 }
 

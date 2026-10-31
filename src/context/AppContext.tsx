@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 export type Language = "id" | "en";
-export type Theme = "dark" | "light";
+export type Theme = "light" | "dark";
 
 interface AppContextType {
   lang: Language;
@@ -14,28 +14,59 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
+const STORAGE_KEY_LANG = "dhafin_portfolio_lang";
+const STORAGE_KEY_THEME = "dhafin_portfolio_theme";
+
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [lang, setLangState] = useState<Language>(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("dhafin_portfolio_lang");
-      if (saved === "id" || saved === "en") return saved;
+    try {
+      if (typeof window !== "undefined") {
+        const saved = localStorage.getItem(STORAGE_KEY_LANG);
+        if (saved === "id" || saved === "en") return saved;
+      }
+    } catch {
+      // Ignore localStorage security/sandbox errors
     }
     return "id";
   });
 
   const [theme, setThemeState] = useState<Theme>(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("dhafin_portfolio_theme");
-      if (saved === "dark" || saved === "light") return saved;
+    try {
+      if (typeof window !== "undefined") {
+        const saved = localStorage.getItem(STORAGE_KEY_THEME);
+        if (saved === "light" || saved === "dark") return saved;
+      }
+    } catch {
+      // Ignore localStorage security/sandbox errors
     }
-    return "dark"; // Default dark: #111110
+    return "light";
   });
+
+  const applyThemeToDOM = (activeTheme: Theme) => {
+    if (typeof document === "undefined") return;
+    const root = document.documentElement;
+    root.setAttribute("data-theme", activeTheme);
+    if (activeTheme === "dark") {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+  };
+
+  const applyLangToDOM = (activeLang: Language) => {
+    if (typeof document === "undefined") return;
+    document.documentElement.lang = activeLang;
+  };
 
   const setLang = (newLang: Language) => {
     setLangState(newLang);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("dhafin_portfolio_lang", newLang);
-      document.documentElement.lang = newLang;
+    applyLangToDOM(newLang);
+    try {
+      if (typeof window !== "undefined") {
+        localStorage.setItem(STORAGE_KEY_LANG, newLang);
+      }
+    } catch {
+      // Ignore
     }
   };
 
@@ -45,15 +76,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("dhafin_portfolio_theme", newTheme);
-      if (newTheme === "dark") {
-        document.documentElement.classList.add("dark");
-        document.documentElement.setAttribute("data-theme", "dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-        document.documentElement.setAttribute("data-theme", "light");
+    applyThemeToDOM(newTheme);
+    try {
+      if (typeof window !== "undefined") {
+        localStorage.setItem(STORAGE_KEY_THEME, newTheme);
       }
+    } catch {
+      // Ignore
     }
   };
 
@@ -62,16 +91,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   useEffect(() => {
-    // Initial sync
-    document.documentElement.lang = lang;
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark");
-      document.documentElement.setAttribute("data-theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      document.documentElement.setAttribute("data-theme", "light");
-    }
-  }, []);
+    applyLangToDOM(lang);
+    applyThemeToDOM(theme);
+  }, [lang, theme]);
 
   return (
     <AppContext.Provider

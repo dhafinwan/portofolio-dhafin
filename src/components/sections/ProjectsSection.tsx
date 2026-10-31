@@ -1,7 +1,6 @@
-import { useState, useRef } from "react";
 import { motion } from "motion/react";
-import { usePortfolioContent, ProjectItem } from "@/data/content";
-import { ArrowUpRight, Check, Star } from "@phosphor-icons/react";
+import { usePortfolioContent } from "@/data/content";
+import { ArrowUpRight, GithubLogo } from "@phosphor-icons/react";
 import {
   usePrefersReducedMotion,
   fadeInUpVariants,
@@ -9,243 +8,102 @@ import {
   VIEWPORT,
 } from "@/lib/motion";
 
-function TechBadge({ tech }: { tech: string }) {
-  return (
-    <span className="rounded-md px-2.5 py-1 text-xs font-mono font-medium bg-surface-2 border border-border text-text-secondary">
-      {tech}
-    </span>
-  );
-}
-
-function SpotlightCard({
-  children,
-  className,
-  prefersReducedMotion,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  prefersReducedMotion: boolean;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [hovered, setHovered] = useState(false);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current || prefersReducedMotion) return;
-    const rect = ref.current.getBoundingClientRect();
-    ref.current.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`);
-    ref.current.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`);
-  };
-
-  return (
-    <div
-      ref={ref}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className={`relative overflow-hidden bg-surface border border-border transition-all duration-200 ${className || ""}`}
-      style={{
-        boxShadow:
-          hovered && !prefersReducedMotion
-            ? "0 14px 34px rgba(0,0,0,0.18)"
-            : "none",
-      }}
-    >
-      {!prefersReducedMotion && (
-        <div
-          className="pointer-events-none absolute inset-0 rounded-[inherit]"
-          style={{
-            opacity: hovered ? 1 : 0,
-            transition: "opacity 0.25s ease",
-            background:
-              "radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), color-mix(in srgb, currentColor 5%, transparent), transparent 70%)",
-          }}
-        />
-      )}
-      {children}
-    </div>
-  );
-}
-
 export function ProjectsSection() {
   const { projects, labels } = usePortfolioContent();
-  const featuredProject = projects.find((p) => p.featured);
-  const otherProjects = projects.filter((p) => !p.featured);
   const prefersReducedMotion = usePrefersReducedMotion();
 
   const containerVariants = prefersReducedMotion ? undefined : viewportContainerVariants;
+  const itemVariants = prefersReducedMotion ? undefined : fadeInUpVariants;
   const initial = prefersReducedMotion ? "visible" : "hidden";
 
   return (
     <section
       id="proyek"
-      className="border-b border-border py-16 lg:py-24 relative overflow-hidden bg-bg"
+      className="border-b border-border py-16 sm:py-20 lg:py-24 relative overflow-hidden bg-bg"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 relative">
-        {/* Section Header */}
         <motion.div
-          className="mb-12 text-left"
-          variants={prefersReducedMotion ? undefined : fadeInUpVariants}
-          initial={initial}
-          whileInView="visible"
-          viewport={VIEWPORT}
-        >
-          <div className="flex items-center gap-2 mb-3">
-            <span className="font-serif-italic text-sm text-text-muted">04</span>
-            <span className="text-text-muted text-xs">•</span>
-            <p className="text-xs font-medium uppercase tracking-[0.2em] text-text-muted">
-              {labels.projects.sectionLabel}
-            </p>
-          </div>
-          <h2 className="text-3xl font-medium tracking-tight sm:text-4xl text-text-primary">
-            {labels.projects.title}{" "}
-            <span className="font-serif-italic font-normal">{labels.projects.titleAccent}</span>
-          </h2>
-          <p className="mt-3 text-sm max-w-2xl text-text-secondary leading-relaxed">
-            {labels.projects.description}
-          </p>
-        </motion.div>
-
-        {/* Featured Project Card */}
-        {featuredProject && (
-          <motion.div
-            variants={prefersReducedMotion ? undefined : fadeInUpVariants}
-            initial={initial}
-            whileInView="visible"
-            viewport={VIEWPORT}
-            whileHover={prefersReducedMotion ? undefined : { y: -2, transition: { duration: 0.2 } }}
-            className="mb-10"
-          >
-            <SpotlightCard
-              prefersReducedMotion={prefersReducedMotion}
-              className="rounded-2xl"
-            >
-              <div className="p-7 sm:p-9 lg:p-10">
-                <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium bg-surface-2 border border-border text-text-primary">
-                      <Star size={12} weight="fill" className="text-text-primary" />
-                      {labels.projects.featuredBadge}
-                    </span>
-                    <span className="rounded-full px-3 py-1 text-xs font-mono font-medium bg-surface-2 border border-border text-text-muted">
-                      {featuredProject.category}
-                    </span>
-                  </div>
-                  <span className="text-xs font-mono text-text-muted">
-                    {featuredProject.period}
-                  </span>
-                </div>
-
-                <h3 className="text-xl font-medium sm:text-2xl lg:text-3xl text-text-primary tracking-tight">
-                  {featuredProject.title}
-                </h3>
-
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {featuredProject.tech.map((tech, idx) => (
-                    <TechBadge key={idx} tech={tech} />
-                  ))}
-                </div>
-
-                <ul className="mt-7 space-y-3 pt-6 border-t border-border">
-                  {featuredProject.points.map((point, idx) => (
-                    <li key={idx} className="flex items-start gap-3 text-sm leading-relaxed text-text-secondary">
-                      <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-surface-2 border border-border text-text-primary">
-                        <Check size={10} weight="bold" />
-                      </span>
-                      <span>{point}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                {featuredProject.href && (
-                  <div className="mt-7 pt-5 border-t border-border">
-                    <a
-                      href={featuredProject.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-pill-primary inline-flex items-center gap-2 text-xs font-medium"
-                    >
-                      <span>{labels.projects.viewRepo}</span>
-                      <ArrowUpRight size={13} />
-                    </a>
-                  </div>
-                )}
-              </div>
-            </SpotlightCard>
-          </motion.div>
-        )}
-
-        {/* Sub-header */}
-        <div className="mb-6 flex items-center gap-3">
-          <h3 className="text-xs font-medium uppercase tracking-[0.2em] text-text-muted">
-            {labels.projects.otherProjectsHeader}
-          </h3>
-        </div>
-
-        {/* Other Projects Grid with Stagger */}
-        <motion.div
-          className="grid gap-6 sm:grid-cols-2"
           variants={containerVariants}
           initial={initial}
           whileInView="visible"
           viewport={VIEWPORT}
         >
-          {otherProjects.map((project: ProjectItem) => (
-            <motion.div
-              key={project.id}
-              variants={prefersReducedMotion ? undefined : fadeInUpVariants}
-              whileHover={prefersReducedMotion ? undefined : { y: -2, transition: { duration: 0.2 } }}
-              className="h-full"
-            >
-              <SpotlightCard
-                prefersReducedMotion={prefersReducedMotion}
-                className="flex h-full flex-col justify-between rounded-2xl p-6 sm:p-7"
+          {/* Section Header */}
+          <motion.div variants={itemVariants} className="mb-10 sm:mb-12 text-left">
+            <div className="flex items-center gap-2 mb-2.5">
+              <span className="h-2 w-2 rounded-full bg-text-secondary" />
+              <p className="text-xs font-mono uppercase tracking-wider text-text-secondary">
+                {labels.projects.sectionLabel}
+              </p>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-text-primary leading-snug">
+              {labels.projects.title}
+            </h2>
+            <p className="mt-2 text-[15px] sm:text-base leading-[1.7] text-text-secondary max-w-prose">
+              {labels.projects.subtitle}
+            </p>
+          </motion.div>
+
+          {/* 2-Column Case Study Card Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {projects.map((project) => (
+              <motion.div
+                key={project.id}
+                variants={itemVariants}
+                className="rounded-2xl p-6 sm:p-7 bg-surface border border-border shadow-xs flex flex-col justify-between hover:border-text-secondary/50 transition-colors duration-200"
               >
                 <div>
-                  <div className="flex items-center justify-between gap-2 mb-4">
-                    <span className="rounded-full px-2.5 py-0.5 text-[11px] font-mono font-medium bg-surface-2 border border-border text-text-muted">
-                      {project.category}
-                    </span>
-                    <span className="text-[11px] font-mono text-text-muted">
-                      {project.period}
-                    </span>
+                  {/* Card Header: Category & Year on Left, Links on Right */}
+                  <div className="flex items-center justify-between gap-3 mb-4">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] font-mono font-medium px-2.5 py-0.5 rounded-full bg-surface-2 border border-border text-text-primary">
+                        {project.category}
+                      </span>
+                      <span className="text-[11px] font-mono text-text-muted">
+                        {project.period}
+                      </span>
+                    </div>
+
+                    {project.repoUrl && (
+                      <a
+                        href={project.repoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-xs font-mono text-text-secondary hover:text-text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg rounded"
+                        aria-label={`${labels.projects.viewCode}: ${project.title}`}
+                      >
+                        <GithubLogo size={15} />
+                        <span>{labels.projects.viewCode}</span>
+                        <ArrowUpRight size={12} />
+                      </a>
+                    )}
                   </div>
 
-                  <h4 className="text-base font-medium leading-snug text-text-primary">
+                  {/* Project Title */}
+                  <h3 className="text-lg font-semibold tracking-tight text-text-primary leading-snug mb-3">
                     {project.title}
-                  </h4>
+                  </h3>
 
-                  <div className="mt-4 flex flex-wrap gap-1.5">
-                    {project.tech.map((tech, idx) => (
-                      <TechBadge key={idx} tech={tech} />
-                    ))}
-                  </div>
-
-                  <ul className="mt-6 space-y-2.5 pt-5 border-t border-border">
-                    {project.points.map((pt, idx) => (
-                      <li key={idx} className="flex items-start gap-2.5 text-xs leading-relaxed text-text-secondary">
-                        <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-text-primary/60" />
-                        <span>{pt}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  {/* Problem & Result 2-sentence description */}
+                  <p className="text-sm leading-relaxed text-text-secondary mb-6">
+                    {project.problemAndResult}
+                  </p>
                 </div>
 
-                {project.href && (
-                  <div className="mt-6 pt-4 border-t border-border">
-                    <a
-                      href={project.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-xs font-medium text-text-primary hover:opacity-70 transition-opacity"
+                {/* Card Footer: Tech Badges */}
+                <div className="pt-4 border-t border-border flex flex-wrap gap-1.5 mt-auto">
+                  {project.tech.map((tech, tIdx) => (
+                    <span
+                      key={tIdx}
+                      className="rounded-md px-2 py-0.5 text-xs font-mono font-medium bg-surface-2 border border-border text-text-secondary"
                     >
-                      <span>{labels.projects.viewProject}</span>
-                      <ArrowUpRight size={13} />
-                    </a>
-                  </div>
-                )}
-              </SpotlightCard>
-            </motion.div>
-          ))}
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
       </div>
     </section>
